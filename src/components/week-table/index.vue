@@ -1,64 +1,93 @@
 <template>
-  <div class="week-table">
+  <div>
     <!-- 表格容器 -->
-    <t-table :data="weekData" border>
-      <thead>
-        <tr>
-          <th>课程</th>
-          <th v-for="day in days" :key="day">{{ day }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(row, index) in timeSlots" :key="index">
-          <td>{{ row }}</td>
-          <td v-for="(day, idx) in days" :key="idx">
-            <!-- 用户可以点击或选择课程，更新课程数据 -->
-            <t-select v-model="weekData[index][day]" :options="courseOptions" placeholder="选择课程" size="small" />
-          </td>
-        </tr>
-      </tbody>
-    </t-table>
-
-    <!-- 课程数据展示（可选） -->
-    <t-button @click="showData">查看当前数据</t-button>
+    <t-table
+      :bordered="true"
+      :data="data"
+      :columns="columns"
+      row-key="index"
+      :rowspan-and-colspan="rowspanAndColspanFn"
+      :editable-cell-state="editableCellState"
+      resizable
+      table-layout="fixed"
+      lazy-load
+      @cell-click="cell_click"
+    />
   </div>
 </template>
-<script setup lang="ts">
-import { ref } from 'vue';
+<script lang="tsx" setup>
+// 引入 TDesign 相关组件
+import type { BaseTableCellEventContext, TableProps, TableRowData } from 'tdesign-vue-next';
+import { ref, watch } from 'vue';
 
-// 7天的课程数据（每天的课程）
-const days = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+import type { RowspanAndColspan, TableColumn, TableData } from '@/api/model/schoolModel';
 
-// 时间槽（假设每一天有 5 个时间段）
-const timeSlots = ['8:00-10:00', '10:00-12:00', '12:00-14:00', '14:00-16:00', '16:00-18:00'];
+type EditableCellState = TableProps<TableRowData>['editableCellState'];
 
-// 课程选项（可以是从后端获取的课程数据，或预定义的课程列表）
-const courseOptions = [
-  { label: '数学', value: 'Math' },
-  { label: '英语', value: 'English' },
-  { label: '物理', value: 'Physics' },
-  { label: '化学', value: 'Chemistry' },
-  { label: '生物', value: 'Biology' },
-  { label: '计算机', value: 'Computer' },
-];
+// 接收 props 数据
+const props = defineProps({
+  // 数据：表格的数据
+  data: {
+    type: Array as () => TableData[],
+    required: true,
+  },
+  // 列配置：表格的列定义
+  columns: {
+    type: Array as () => TableColumn[],
+    required: true,
+  },
+  // 合并行和列的配置
+  rowspanAndColspan: {
+    type: Array as () => RowspanAndColspan[],
+    required: true,
+  },
+  editableCellState: {
+    // 运行时校验：允许 Object 或 Function 类型
+    type: [Object, Function] as unknown as () => EditableCellState,
+    required: false,
+    default: undefined, // 可选：设置默认值
+  },
+});
 
-// 默认的周表数据，假设传入的 ITC2019 数据结构和我们预定义的一样
-const weekData = ref(
-  timeSlots.map(() => {
-    const dayData = {};
-    days.forEach((day) => {
-      dayData[day] = ''; // 初始化为空
-    });
-    return dayData;
-  }),
-);
+const emit = defineEmits(['cell-click']);
 
-// 处理用户点击查看数据的事件
-const showData = () => {
-  console.log(weekData.value);
+const default_editableCellState: TableProps['editableCellState'] = () => {
+  return false;
 };
+
+const cell_click = (context: BaseTableCellEventContext<TableColumn>) => {
+  emit('cell-click', context);
+};
+
+const columns = ref(props.columns);
+const editableCellState = ref(props.editableCellState || default_editableCellState);
+
+// 将传递的 `rowspanAndColspan` 数组转换成合适的合并逻辑
+const rowspanAndColspanFn: TableProps['rowspanAndColspan'] = ({ rowIndex, colIndex }) => {
+  // 遍历父组件传递的合并规则数组
+  for (const rule of props.rowspanAndColspan) {
+    if (rule.colIndex === colIndex && rule.rowIndex === rowIndex) {
+      return {
+        rowspan: rule.rowspan || 1,
+        colspan: rule.colspan || 1,
+      };
+    }
+  }
+  return {};
+};
+
+watch(
+  () => props.columns,
+  (newCols) => {
+    console.log('watch', newCols);
+    columns.value = [...newCols]; // 解构新数组，强制触发更新
+    console.log('watch columns', columns.value);
+  },
+  { deep: true }, // 深度监听列数组的元素变化
+);
 </script>
-<style scoped lang="less">
+<style scoped>
+/* 这里可以根据需要调整样式 */
 .week-table {
   width: 100%;
   padding: 20px;

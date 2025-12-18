@@ -4,6 +4,8 @@ export default {
     off: '已停用',
   },
   manage: '管理',
+  star: '收藏',
+  unstar: '取消收藏',
   delete: '删除',
   commonTable: {
     contractName: '合同名称',

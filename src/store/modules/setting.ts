@@ -80,7 +80,6 @@ export const useSettingStore = defineStore('setting', {
         colorMap = generateColorMap(brandTheme, newPalette, mode, brandColorIndex);
         this.colorList[colorKey] = colorMap;
       }
-      // TODO 需要解决不停切换时有反复插入 style 的问题
       insertThemeStylesheet(brandTheme, colorMap, mode);
       document.documentElement.setAttribute('theme-color', brandTheme);
     },

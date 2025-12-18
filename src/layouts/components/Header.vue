@@ -2,10 +2,10 @@
   <div :class="layoutCls">
     <t-head-menu :class="menuCls" :theme="menuTheme" expand-type="popup" :value="active">
       <template #logo>
-        <span v-if="showLogo" class="header-logo-container" @click="handleNav('/dashboard/base')">
-          <logo-full class="t-logo" />
-        </span>
-        <div v-else class="header-operate-left">
+        <!--        <span v-if="showLogo" class="header-logo-container" @click="handleNav('/dashboard/base')"> -->
+        <!--          <logo-full class="t-logo" /> -->
+        <!--        </span> -->
+        <div class="header-operate-left">
           <t-button theme="default" shape="square" variant="text" @click="changeCollapsed">
             <t-icon class="collapsed-icon" name="view-list" />
           </t-button>
@@ -21,13 +21,12 @@
           <search v-if="layout !== 'side'" :layout="layout" />
 
           <!-- 全局通知 -->
-          <notice />
-
-          <t-tooltip placement="bottom" :content="t('layout.header.code')">
-            <t-button theme="default" shape="square" variant="text" @click="navToGitHub">
-              <t-icon name="logo-github" />
-            </t-button>
-          </t-tooltip>
+          <!--          <notice /> -->
+          <!--          <t-tooltip placement="bottom" :content="t('layout.header.code')"> -->
+          <!--            <t-button theme="default" shape="square" variant="text" @click="navToGitHub"> -->
+          <!--              <t-icon name="logo-github" /> -->
+          <!--            </t-button> -->
+          <!--          </t-tooltip> -->
           <t-tooltip placement="bottom" :content="t('layout.header.help')">
             <t-button theme="default" shape="square" variant="text" @click="navToHelper">
               <t-icon name="help-circle" />
@@ -80,7 +79,7 @@ import type { PropType } from 'vue';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
-import LogoFull from '@/assets/assets-logo-full.svg?component';
+// import LogoFull from '@/assets/assets-logo-full.svg?component';
 import { prefix } from '@/config/global';
 import { langList, t } from '@/locales';
 import { useLocale } from '@/locales/useLocale';
@@ -103,7 +102,7 @@ const { theme, layout, showLogo, menu, isFixed, isCompact } = defineProps({
   },
   showLogo: {
     type: Boolean,
-    default: true,
+    default: false,
   },
   menu: {
     type: Array as PropType<MenuRoute[]>,
@@ -172,9 +171,9 @@ const handleLogout = () => {
   });
 };
 
-const navToGitHub = () => {
-  window.open('https://github.com/tencent/tdesign-vue-next-starter');
-};
+// const navToGitHub = () => {
+//   window.open('https://github.com/tencent/tdesign-vue-next-starter');
+// };
 
 const navToHelper = () => {
   window.open('http://tdesign.tencent.com/starter/docs/get-started');

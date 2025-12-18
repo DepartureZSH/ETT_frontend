@@ -13,6 +13,14 @@ import './permission';
 
 const app = createApp(App);
 
+const warn = console.warn;
+console.warn = (...args) => {
+  if (typeof args[0] === 'string' && args[0].includes('Component inside <Transition>')) {
+    return;
+  }
+  warn(...args);
+};
+
 app.use(TDesign);
 app.use(store);
 app.use(router);

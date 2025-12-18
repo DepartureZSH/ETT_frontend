@@ -1,7 +1,6 @@
 export type TColorToken = Record<string, string>;
 export type TColorSeries = Record<string, TColorToken>;
 
-// TODO: 中性色暂时固定 待tvision-color生成带色彩倾向的中性色
 export const LIGHT_CHART_COLORS = {
   textColor: 'rgba(0, 0, 0, 0.9)',
   placeholderColor: 'rgba(0, 0, 0, 0.35)',

@@ -1,6 +1,536 @@
 import Mock from 'mockjs';
 import type { MockMethod } from 'vite-plugin-mock';
 
+import type { TABLECONFIG, Timetable, TimetableDetail, WEEKTABLE } from '@/api/model/schoolModel';
+
+const tableConfig: TABLECONFIG = {
+  week: 13,
+  day: 5,
+  slot: 144,
+  isFixed: true,
+};
+
+const defaultTable: WEEKTABLE = {
+  name: '默认课表',
+  tableColumns: [
+    {
+      colKey: 'Time',
+      title: '时间',
+    },
+    {
+      colKey: 'Monday',
+      title: '周一',
+    },
+    {
+      colKey: 'Tuesday',
+      title: '周二',
+    },
+    {
+      colKey: 'Wednesday',
+      title: '周三',
+    },
+    {
+      colKey: 'Thursday',
+      title: '周四',
+    },
+    {
+      colKey: 'Friday',
+      title: '周五',
+    },
+  ],
+  tableData: [
+    {
+      index: 0,
+      Time: '08:00-08:45',
+    },
+    {
+      index: 1,
+      Time: '08:45-09:00',
+    },
+  ],
+  rowspanAndColspan: [],
+};
+
+const Table: WEEKTABLE[] = [
+  {
+    name: '总周表',
+    tableColumns: [
+      {
+        colKey: 'Classes',
+        title: '班级',
+        width: '15',
+      },
+      {
+        colKey: 'Monday',
+        title: '周一',
+        width: '15',
+        children: [
+          {
+            colKey: 'M1',
+            title: '一',
+            width: '15',
+          },
+          {
+            colKey: 'M2',
+            title: '二',
+            width: '15',
+          },
+          {
+            colKey: 'M3',
+            title: '三',
+            width: '15',
+          },
+          {
+            colKey: 'M4',
+            title: '四',
+            width: '15',
+          },
+          {
+            colKey: 'M5',
+            title: '五',
+            width: '15',
+          },
+          {
+            colKey: 'M6',
+            title: '六',
+            width: '15',
+          },
+        ],
+      },
+      {
+        colKey: 'Tuesday',
+        title: '周二',
+        width: '15',
+        children: [
+          {
+            colKey: 'T1',
+            title: '一',
+            width: '15',
+          },
+          {
+            colKey: 'T2',
+            title: '二',
+            width: '15',
+          },
+          {
+            colKey: 'T3',
+            title: '三',
+            width: '15',
+          },
+          {
+            colKey: 'T4',
+            title: '四',
+            width: '15',
+          },
+          {
+            colKey: 'T5',
+            title: '五',
+            width: '15',
+          },
+          {
+            colKey: 'T6',
+            title: '六',
+            width: '15',
+          },
+        ],
+      },
+      {
+        colKey: 'Wednesday',
+        title: '周三',
+        width: '15',
+        children: [
+          {
+            colKey: 'W1',
+            title: '一',
+            width: '15',
+          },
+          {
+            colKey: 'W2',
+            title: '二',
+            width: '15',
+          },
+          {
+            colKey: 'W3',
+            title: '三',
+            width: '15',
+          },
+          {
+            colKey: 'W4',
+            title: '四',
+            width: '15',
+          },
+          {
+            colKey: 'W5',
+            title: '五',
+            width: '15',
+          },
+          {
+            colKey: 'W6',
+            title: '六',
+            width: '15',
+          },
+        ],
+      },
+      {
+        colKey: 'Thursday',
+        title: '周四',
+        width: '15',
+        children: [
+          {
+            colKey: 'TH1',
+            title: '一',
+            width: '15',
+          },
+          {
+            colKey: 'TH2',
+            title: '二',
+            width: '15',
+          },
+          {
+            colKey: 'TH3',
+            title: '三',
+            width: '15',
+          },
+          {
+            colKey: 'TH4',
+            title: '四',
+            width: '15',
+          },
+          {
+            colKey: 'TH5',
+            title: '五',
+            width: '15',
+          },
+          {
+            colKey: 'TH6',
+            title: '六',
+            width: '15',
+          },
+        ],
+      },
+      {
+        colKey: 'Friday',
+        title: '周五',
+        width: '15',
+        children: [
+          {
+            colKey: 'F1',
+            title: '一',
+            width: '15',
+          },
+          {
+            colKey: 'F2',
+            title: '二',
+            width: '15',
+          },
+          {
+            colKey: 'F3',
+            title: '三',
+            width: '15',
+          },
+          {
+            colKey: 'F4',
+            title: '四',
+            width: '15',
+          },
+          {
+            colKey: 'F5',
+            title: '五',
+            width: '15',
+          },
+          {
+            colKey: 'F6',
+            title: '六',
+            width: '15',
+          },
+        ],
+      },
+    ],
+    tableData: [],
+    rowspanAndColspan: [],
+  },
+  {
+    name: '课程周表',
+    tableColumns: [
+      {
+        colKey: 'Monday',
+        title: '周一',
+        width: '15',
+      },
+    ],
+    tableData: [],
+    rowspanAndColspan: [],
+  },
+  {
+    name: '教室周表',
+    tableData: [],
+    tableColumns: [],
+    rowspanAndColspan: [],
+  },
+  {
+    name: '教师周表',
+    tableData: [],
+    tableColumns: [],
+    rowspanAndColspan: [],
+  },
+  {
+    name: '学生周表',
+    tableData: [],
+    tableColumns: [],
+    rowspanAndColspan: [],
+  },
+];
+const details: TimetableDetail[] = [
+  {
+    index: 0,
+    isStar: false,
+    owner: 'SchedAI',
+    usage: 1,
+    name: '通用课表',
+    type: '通用',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '通用课表.xlsx',
+        url: '',
+      },
+    ],
+    description: '适用于任何阶段的课程安排',
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 1,
+    isStar: false,
+    owner: 'SchedAI',
+    usage: 1,
+    name: '小学通用课表',
+    type: '小学',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '小学通用课表.xlsx',
+        url: '',
+      },
+    ],
+    description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 2,
+    isStar: false,
+    owner: 'SchedAI',
+    usage: 2,
+    name: '初中通用课表',
+    type: '初中',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '初中通用课表.xlsx',
+        url: '',
+      },
+    ],
+    description: '为初中阶段的学生提供完整的课程表，适应多样化的教学需求，涵盖各类科目。',
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 3,
+    isStar: false,
+    owner: 'SchedAI',
+    usage: 3,
+    name: '高中通用课表',
+    type: '高中',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '高中通用课表.xlsx',
+        url: '',
+      },
+    ],
+    description: '适合高中阶段的学科课表，提供科学、文学、艺术等多方面课程安排。',
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 4,
+    isStar: false,
+    owner: 'SchedAI',
+    usage: 4,
+    name: '大学通用课表',
+    type: '大学',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '大学通用课表.xlsx',
+        url: '',
+      },
+    ],
+    description: '为大学生设计的课程表，灵活安排学科选择，涵盖多个专业课程。',
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 5,
+    isStar: false,
+    owner: 'SchedAI',
+    usage: 5,
+    name: '教育机构通用课表',
+    type: '教育机构',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '大学通用课表.xlsx',
+        url: '',
+      },
+    ],
+    description: '适用于各类教育机构，提供定制化的课程表设置，满足不同年龄段学生的需求。',
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+];
+const Tables: Timetable[] = [
+  {
+    index: 0,
+    parentId: null,
+    owner: 'SchedAI',
+    name: '通用课表',
+    type: '通用',
+    description: '适用于通用阶段的课程安排。',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '小学通用课表.xlsx',
+        url: '',
+      },
+    ],
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 1,
+    parentId: 0,
+    owner: 'SchedAI',
+    name: '小学通用课表',
+    type: '小学',
+    description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '小学通用课表.xlsx',
+        url: '',
+      },
+    ],
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 2,
+    parentId: 0,
+    owner: 'SchedAI',
+    name: '初中通用课表',
+    type: '初中',
+    description: '为初中阶段的学生提供完整的课程表，适应多样化的教学需求，涵盖各类科目。',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '初中通用课表.xlsx',
+        url: '',
+      },
+    ],
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 3,
+    parentId: 0,
+    owner: 'SchedAI',
+    name: '高中通用课表',
+    type: '高中',
+    description: '适合高中阶段的学科课表，提供科学、文学、艺术等多方面课程安排。',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '高中通用课表.xlsx',
+        url: '',
+      },
+    ],
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 4,
+    parentId: 0,
+    owner: 'SchedAI',
+    name: '大学通用课表',
+    type: '大学',
+    description: '为大学生设计的课程表，灵活安排学科选择，涵盖多个专业课程。',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '大学通用课表.xlsx',
+        url: '',
+      },
+    ],
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+  {
+    index: 5,
+    parentId: 0,
+    owner: 'SchedAI',
+    name: '教育机构通用课表',
+    type: '教育机构',
+    description: '适用于各类教育机构，提供定制化的课程表设置，满足不同年龄段学生的需求。',
+    createDate: new Date(),
+    publishDate: new Date(),
+    updateDate: new Date(),
+    attachment: [
+      {
+        name: '教育机构通用课表.xlsx',
+        url: '',
+      },
+    ],
+    TableConfig: tableConfig,
+    DefaultTable: defaultTable,
+    Tables: Table,
+  },
+];
+
 export default [
   {
     url: '/api/get-purchase-list',
@@ -152,217 +682,368 @@ export default [
       code: 0,
       data: {
         ...Mock.mock({
+          list: [],
+          // list: [
+          //   {
+          //     path: '/list',
+          //     name: 'list',
+          //     component: 'LAYOUT',
+          //     redirect: '/list/base',
+          //     meta: {
+          //       title: {
+          //         zh_CN: '列表页',
+          //         en_US: 'List',
+          //       },
+          //       icon: 'view-list',
+          //     },
+          //     children: [
+          //       {
+          //         path: 'base',
+          //         name: 'ListBase',
+          //         component: '/list/base/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '基础列表页',
+          //             en_US: 'Base List',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'card',
+          //         name: 'ListCard',
+          //         component: '/list/card/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '卡片列表页',
+          //             en_US: 'Card List',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'filter',
+          //         name: 'ListFilter',
+          //         component: '/list/filter/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '筛选列表页',
+          //             en_US: 'Filter List',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'tree',
+          //         name: 'ListTree',
+          //         component: '/list/tree/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '树状筛选列表页',
+          //             en_US: 'Tree List',
+          //           },
+          //         },
+          //       },
+          //     ],
+          //   },
+          //   {
+          //     path: '/form',
+          //     name: 'form',
+          //     component: 'LAYOUT',
+          //     redirect: '/form/base',
+          //     meta: {
+          //       title: {
+          //         zh_CN: '表单页',
+          //         en_US: 'Form',
+          //       },
+          //       icon: 'edit-1',
+          //     },
+          //     children: [
+          //       {
+          //         path: 'base',
+          //         name: 'FormBase',
+          //         component: '/form/base/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '基础表单页',
+          //             en_US: 'Base Form',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'step',
+          //         name: 'FormStep',
+          //         component: '/form/step/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '分步表单页',
+          //             en_US: 'Step Form',
+          //           },
+          //         },
+          //       },
+          //     ],
+          //   },
+          //   {
+          //     path: '/detail',
+          //     name: 'detail',
+          //     component: 'LAYOUT',
+          //     redirect: '/detail/base',
+          //     meta: {
+          //       title: {
+          //         zh_CN: '详情页',
+          //         en_US: 'Detail',
+          //       },
+          //       icon: 'layers',
+          //     },
+          //     children: [
+          //       {
+          //         path: 'base',
+          //         name: 'DetailBase',
+          //         component: '/detail/base/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '基础详情页',
+          //             en_US: 'Base Detail',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'advanced',
+          //         name: 'DetailAdvanced',
+          //         component: '/detail/advanced/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '多卡片详情页',
+          //             en_US: 'Card Detail',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'deploy',
+          //         name: 'DetailDeploy',
+          //         component: '/detail/deploy/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '数据详情页',
+          //             en_US: 'Data Detail',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'secondary',
+          //         name: 'DetailSecondary',
+          //         component: '/detail/secondary/index',
+          //         meta: {
+          //           title: {
+          //             zh_CN: '二级详情页',
+          //             en_US: 'Secondary Detail',
+          //           },
+          //         },
+          //       },
+          //     ],
+          //   },
+          //   {
+          //     path: '/frame',
+          //     name: 'Frame',
+          //     component: 'Layout',
+          //     redirect: '/frame/doc',
+          //     meta: {
+          //       icon: 'internet',
+          //       title: {
+          //         zh_CN: '外部页面',
+          //         en_US: 'External',
+          //       },
+          //     },
+          //     children: [
+          //       {
+          //         path: 'doc',
+          //         name: 'Doc',
+          //         component: 'IFrame',
+          //         meta: {
+          //           frameSrc: 'https://tdesign.tencent.com/starter/docs/vue-next/get-started',
+          //           title: {
+          //             zh_CN: '使用文档（内嵌）',
+          //             en_US: 'Documentation(IFrame)',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'TDesign',
+          //         name: 'TDesign',
+          //         component: 'IFrame',
+          //         meta: {
+          //           frameSrc: 'https://tdesign.tencent.com/vue-next/getting-started',
+          //           title: {
+          //             zh_CN: 'TDesign 文档（内嵌）',
+          //             en_US: 'TDesign (IFrame)',
+          //           },
+          //         },
+          //       },
+          //       {
+          //         path: 'TDesign2',
+          //         name: 'TDesign2',
+          //         component: 'IFrame',
+          //         meta: {
+          //           frameSrc: 'https://tdesign.tencent.com/vue-next/getting-started',
+          //           frameBlank: true,
+          //           title: {
+          //             zh_CN: 'TDesign 文档（外链',
+          //             en_US: 'TDesign Doc(Link)',
+          //           },
+          //         },
+          //       },
+          //     ],
+          //   },
+          // ],
+        }),
+      },
+    },
+  },
+  /*************************************/
+  {
+    url: '/api/get-my-templates',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: {
+        ...Mock.mock({
           list: [
             {
-              path: '/list',
-              name: 'list',
-              component: 'LAYOUT',
-              redirect: '/list/base',
-              meta: {
-                title: {
-                  zh_CN: '列表页',
-                  en_US: 'List',
-                },
-                icon: 'view-list',
-              },
-              children: [
-                {
-                  path: 'base',
-                  name: 'ListBase',
-                  component: '/list/base/index',
-                  meta: {
-                    title: {
-                      zh_CN: '基础列表页',
-                      en_US: 'Base List',
-                    },
-                  },
-                },
-                {
-                  path: 'card',
-                  name: 'ListCard',
-                  component: '/list/card/index',
-                  meta: {
-                    title: {
-                      zh_CN: '卡片列表页',
-                      en_US: 'Card List',
-                    },
-                  },
-                },
-                {
-                  path: 'filter',
-                  name: 'ListFilter',
-                  component: '/list/filter/index',
-                  meta: {
-                    title: {
-                      zh_CN: '筛选列表页',
-                      en_US: 'Filter List',
-                    },
-                  },
-                },
-                {
-                  path: 'tree',
-                  name: 'ListTree',
-                  component: '/list/tree/index',
-                  meta: {
-                    title: {
-                      zh_CN: '树状筛选列表页',
-                      en_US: 'Tree List',
-                    },
-                  },
-                },
-              ],
-            },
-            {
-              path: '/form',
-              name: 'form',
-              component: 'LAYOUT',
-              redirect: '/form/base',
-              meta: {
-                title: {
-                  zh_CN: '表单页',
-                  en_US: 'Form',
-                },
-                icon: 'edit-1',
-              },
-              children: [
-                {
-                  path: 'base',
-                  name: 'FormBase',
-                  component: '/form/base/index',
-                  meta: {
-                    title: {
-                      zh_CN: '基础表单页',
-                      en_US: 'Base Form',
-                    },
-                  },
-                },
-                {
-                  path: 'step',
-                  name: 'FormStep',
-                  component: '/form/step/index',
-                  meta: {
-                    title: {
-                      zh_CN: '分步表单页',
-                      en_US: 'Step Form',
-                    },
-                  },
-                },
-              ],
-            },
-            {
-              path: '/detail',
-              name: 'detail',
-              component: 'LAYOUT',
-              redirect: '/detail/base',
-              meta: {
-                title: {
-                  zh_CN: '详情页',
-                  en_US: 'Detail',
-                },
-                icon: 'layers',
-              },
-              children: [
-                {
-                  path: 'base',
-                  name: 'DetailBase',
-                  component: '/detail/base/index',
-                  meta: {
-                    title: {
-                      zh_CN: '基础详情页',
-                      en_US: 'Base Detail',
-                    },
-                  },
-                },
-                {
-                  path: 'advanced',
-                  name: 'DetailAdvanced',
-                  component: '/detail/advanced/index',
-                  meta: {
-                    title: {
-                      zh_CN: '多卡片详情页',
-                      en_US: 'Card Detail',
-                    },
-                  },
-                },
-                {
-                  path: 'deploy',
-                  name: 'DetailDeploy',
-                  component: '/detail/deploy/index',
-                  meta: {
-                    title: {
-                      zh_CN: '数据详情页',
-                      en_US: 'Data Detail',
-                    },
-                  },
-                },
-                {
-                  path: 'secondary',
-                  name: 'DetailSecondary',
-                  component: '/detail/secondary/index',
-                  meta: {
-                    title: {
-                      zh_CN: '二级详情页',
-                      en_US: 'Secondary Detail',
-                    },
-                  },
-                },
-              ],
-            },
-            {
-              path: '/frame',
-              name: 'Frame',
-              component: 'Layout',
-              redirect: '/frame/doc',
-              meta: {
-                icon: 'internet',
-                title: {
-                  zh_CN: '外部页面',
-                  en_US: 'External',
-                },
-              },
-              children: [
-                {
-                  path: 'doc',
-                  name: 'Doc',
-                  component: 'IFrame',
-                  meta: {
-                    frameSrc: 'https://tdesign.tencent.com/starter/docs/vue-next/get-started',
-                    title: {
-                      zh_CN: '使用文档（内嵌）',
-                      en_US: 'Documentation(IFrame)',
-                    },
-                  },
-                },
-                {
-                  path: 'TDesign',
-                  name: 'TDesign',
-                  component: 'IFrame',
-                  meta: {
-                    frameSrc: 'https://tdesign.tencent.com/vue-next/getting-started',
-                    title: {
-                      zh_CN: 'TDesign 文档（内嵌）',
-                      en_US: 'TDesign (IFrame)',
-                    },
-                  },
-                },
-                {
-                  path: 'TDesign2',
-                  name: 'TDesign2',
-                  component: 'IFrame',
-                  meta: {
-                    frameSrc: 'https://tdesign.tencent.com/vue-next/getting-started',
-                    frameBlank: true,
-                    title: {
-                      zh_CN: 'TDesign 文档（外链',
-                      en_US: 'TDesign Doc(Link)',
-                    },
-                  },
-                },
-              ],
+              index: 1,
+              isStar: true,
+              isOwner: true,
+              usage: 1,
+              name: '小学通用课表',
+              description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
             },
           ],
         }),
       },
+    }),
+  },
+  {
+    url: '/api/get-stars',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: {
+        ...Mock.mock({
+          list: [
+            {
+              index: 1,
+              isStar: true,
+              isOwner: false,
+              usage: 1,
+              name: '小学通用课表',
+              description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
+            },
+            {
+              index: 2,
+              isStar: true,
+              isOwner: false,
+              usage: 2,
+              name: '初中通用课表',
+              description: '为初中阶段的学生提供完整的课程表，适应多样化的教学需求，涵盖各类科目。',
+            },
+          ],
+        }),
+      },
+    }),
+  },
+  {
+    url: '/api/get-recommended-templates',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: {
+        ...Mock.mock({
+          list: [
+            {
+              index: 0,
+              isStar: false,
+              isOwner: false,
+              usage: 1,
+              name: '通用课表',
+              description: '适用于任何阶段的课程安排',
+            },
+            {
+              index: 1,
+              isStar: false,
+              isOwner: false,
+              usage: 1,
+              name: '小学通用课表',
+              description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
+            },
+            {
+              index: 2,
+              isStar: false,
+              isOwner: false,
+              usage: 2,
+              name: '初中通用课表',
+              description: '为初中阶段的学生提供完整的课程表，适应多样化的教学需求，涵盖各类科目。',
+            },
+            {
+              index: 3,
+              isStar: false,
+              isOwner: false,
+              usage: 3,
+              name: '高中通用课表',
+              description: '适合高中阶段的学科课表，提供科学、文学、艺术等多方面课程安排。',
+            },
+            {
+              index: 4,
+              isStar: false,
+              isOwner: false,
+              usage: 4,
+              name: '大学通用课表',
+              description: '为大学生设计的课程表，灵活安排学科选择，涵盖多个专业课程。',
+            },
+            {
+              index: 5,
+              isStar: false,
+              isOwner: false,
+              usage: 5,
+              name: '教育机构通用课表',
+              description: '适用于各类教育机构，提供定制化的课程表设置，满足不同年龄段学生的需求。',
+            },
+          ],
+        }),
+      },
+    }),
+  },
+  {
+    url: /\/api\/get-details\/\d+/,
+    method: 'get',
+    response: (req: { url: string }) => {
+      const url = new URL(req.url, 'http://localhost');
+      const path = url.pathname; // /api/get-details/1
+      const id = Number(path.split('/').pop()); // 1
+      let res: TimetableDetail = {};
+      for (const item of details) {
+        if (item.index === id) {
+          res = item;
+        }
+      }
+      return {
+        code: 0,
+        data: res ?? details[0],
+      };
+    },
+  },
+  {
+    url: /\/api\/get-template\/\d+/,
+    method: 'get',
+    response: (req: { url: string }) => {
+      const url = new URL(req.url, 'http://localhost');
+      const path = url.pathname; // /api/get-details/1
+      const id = Number(path.split('/').pop()); // 1
+      let res: Timetable = {};
+      for (const item of Tables) {
+        if (item.index === id) {
+          res = item;
+        }
+      }
+      return {
+        code: 0,
+        data: res ?? Tables[0],
+      };
     },
   },
 ] as MockMethod[];

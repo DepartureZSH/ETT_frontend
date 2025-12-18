@@ -1,21 +1,30 @@
-import type { FormRule } from 'tdesign-vue-next';
+import type { FormRule, UploadFile } from 'tdesign-vue-next';
 
 export const FORM_RULES: Record<string, FormRule[]> = {
-  name: [{ required: true, type: 'error' }],
-  type: [{ required: true, type: 'error' }],
-  title: [{ required: true, type: 'error' }],
-  taxNum: [{ required: true, type: 'error' }],
-  consignee: [{ required: true, type: 'error' }],
-  mobileNum: [{ required: true, type: 'error' }],
-  deliveryAddress: [{ required: true, type: 'error' }],
-  fullAddress: [{ required: true, type: 'error' }],
+  name: [{ required: true, message: '请输入合同名称', type: 'error' }],
+  type: [{ required: true, message: '请选择合同类型', type: 'error' }],
+  payment: [{ required: true, message: '请选择合同收付类型', type: 'error' }],
+  amount: [{ required: true, message: '请输入合同金额', type: 'error' }],
+  partyA: [{ required: true, message: '请选择甲方', type: 'error' }],
+  partyB: [{ required: true, message: '请选择乙方', type: 'error' }],
+  signDate: [{ required: true, message: '请选择日期', type: 'error' }],
+  startDate: [{ required: true, message: '请选择日期', type: 'error' }],
+  endDate: [{ required: true, message: '请选择日期', type: 'error' }],
 };
 
-export const NAME_OPTIONS = [
-  { label: 'A', value: '1' },
-  { label: 'B', value: '2' },
-  { label: 'C', value: '3' },
-];
+export const INITIAL_DATA = {
+  name: '',
+  type: '',
+  partyA: '',
+  partyB: '',
+  signDate: '',
+  startDate: '',
+  endDate: '',
+  payment: '1',
+  amount: 0,
+  comment: '',
+  files: [] as Array<UploadFile>,
+};
 
 export const TYPE_OPTIONS = [
   { label: 'Type A', value: '1' },
@@ -23,33 +32,14 @@ export const TYPE_OPTIONS = [
   { label: 'Type C', value: '3' },
 ];
 
-export const ADDRESS_OPTIONS = [
-  { label: '广东省深圳市南山区', value: '1' },
-  { label: '北京市海淀区', value: '2' },
-  { label: '上海市徐汇区', value: '3' },
-  { label: '四川省成都市高新区', value: '4' },
-  { label: '广东省广州市天河区', value: '5' },
-  { label: '陕西省西安市高新区', value: '6' },
+export const PARTY_A_OPTIONS = [
+  { label: 'Company A', value: '1' },
+  { label: 'Company B', value: '2' },
+  { label: 'Company C', value: '3' },
 ];
 
-export const INITIAL_DATA1 = {
-  name: '',
-  type: '',
-};
-
-export const INITIAL_DATA2 = {
-  title: '',
-  taxNum: '',
-  address: '',
-  bank: '',
-  bankAccount: '',
-  email: '',
-  tel: '',
-};
-
-export const INITIAL_DATA3 = {
-  consignee: '',
-  mobileNum: '',
-  deliveryAddress: '',
-  fullAddress: '',
-};
+export const PARTY_B_OPTIONS = [
+  { label: 'Company A', value: '1' },
+  { label: 'Company B', value: '2' },
+  { label: 'Company C', value: '3' },
+];

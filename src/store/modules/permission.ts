@@ -7,6 +7,19 @@ import router, { fixedRouterList, homepageRouterList } from '@/router';
 import { store } from '@/store';
 import { transformObjectToRoute } from '@/utils/route';
 
+// const REMOVED_PATHS = ['/list', '/form', '/detail', '/frame', '/result'];
+//
+// function filterRoutesByPath(routes: any[], removedPaths: string[]): RouteRecordRaw[] {
+//   return routes
+//     .filter((r) => !removedPaths.includes(r.path))
+//     .map((r) => {
+//       if (r.children && r.children.length > 0) {
+//         return { ...r, children: filterRoutesByPath(r.children, removedPaths) };
+//       }
+//       return r;
+//     });
+// }
+
 export const usePermissionStore = defineStore('permission', {
   state: () => ({
     whiteListRouters: ['/login'],
@@ -30,6 +43,8 @@ export const usePermissionStore = defineStore('permission', {
         // 发起菜单权限请求 获取菜单列表
         const asyncRoutes: Array<RouteItem> = (await getMenuList()).list;
         this.asyncRoutes = transformObjectToRoute(asyncRoutes);
+        // 过滤指定的路由项
+        // this.asyncRoutes = filterRoutesByPath(this.asyncRoutes, REMOVED_PATHS);
         await this.initRoutes();
         return this.asyncRoutes;
       } catch (error) {

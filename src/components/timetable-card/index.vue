@@ -1,69 +1,26 @@
 <template>
-  <t-card theme="poster2" :bordered="false">
-    <template #avatar>
-      <t-avatar size="56px">
-        <template #icon>
-          <shop-icon v-if="props.product.type === 1" />
-          <calendar-icon v-if="props.product.type === 2" />
-          <service-icon v-if="props.product.type === 3" />
-          <user-avatar-icon v-if="props.product.type === 4" />
-          <laptop-icon v-if="props.product.type === 5" />
-        </template>
-      </t-avatar>
-    </template>
-    <template #status>
-      <t-tag :theme="props.product.isSetup ? 'success' : 'default'" :disabled="!props.product.isSetup">
-        {{ props.product.isSetup ? t('components.isSetup.on') : t('components.isSetup.off') }}
-      </t-tag>
-    </template>
-    <template #content>
-      <p class="list-card-item_detail--name">{{ props.product.name }}</p>
-      <p class="list-card-item_detail--desc">{{ props.product.description }}</p>
-    </template>
-    <template #footer>
-      <t-avatar-group cascading="left-up" :max="2">
-        <t-avatar>{{ typeMap[product.type - 1] }}</t-avatar>
-        <t-avatar
-          ><template #icon>
-            <add-icon />
-          </template>
-        </t-avatar>
-      </t-avatar-group>
-    </template>
-    <template #actions>
-      <t-dropdown
-        :disabled="!props.product.isSetup"
-        trigger="click"
-        :options="[
-          {
-            content: t('components.manage'),
-            value: 'manage',
-            onClick: () => handleClickManage(props.product),
-          },
-          {
-            content: t('components.delete'),
-            value: 'delete',
-            onClick: () => handleClickDelete(props.product),
-          },
-        ]"
-      >
-        <t-button theme="default" :disabled="!props.product.isSetup" shape="square" variant="text">
-          <more-icon />
-        </t-button>
-      </t-dropdown>
-    </template>
-  </t-card>
+  <div>
+    <t-card theme="poster2" :bordered="false">
+      <template #status> </template>
+      <template #content>
+        <p class="list-card-item_detail--name">{{ props.product.name }}</p>
+        <p class="list-card-item_detail--desc">{{ props.product.description }}</p>
+      </template>
+      <template #footer>
+        <div>使用量：{{ product.usage }}</div>
+      </template>
+      <template #actions>
+        <t-dropdown trigger="click" :options="ProductOptions">
+          <t-button theme="default" shape="square" variant="text">
+            <more-icon />
+          </t-button>
+        </t-dropdown>
+      </template>
+    </t-card>
+  </div>
 </template>
 <script setup lang="ts">
-import {
-  AddIcon,
-  CalendarIcon,
-  LaptopIcon,
-  MoreIcon,
-  ServiceIcon,
-  ShopIcon,
-  UserAvatarIcon,
-} from 'tdesign-icons-vue-next';
+import { MoreIcon } from 'tdesign-icons-vue-next';
 import type { PropType } from 'vue';
 
 import { t } from '@/locales';
@@ -73,6 +30,9 @@ export interface CardProductType {
   isSetup: boolean;
   description: string;
   name: string;
+  usage: number;
+  isStar: boolean;
+  relation: number;
 }
 
 const props = defineProps({
@@ -82,16 +42,18 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['manage-product', 'delete-item']);
+const emit = defineEmits(['manage-detail']);
 
-const typeMap = ['A', 'B', 'C', 'D', 'E'];
+const ProductOptions = [
+  // {
+  //   content: t('components.commonTable.detail'),
+  //   value: 'detail',
+  //   onClick: () => handleClickDetail(props.product),
+  // },
+];
 
-const handleClickManage = (product: CardProductType) => {
-  emit('manage-product', product);
-};
-
-const handleClickDelete = (product: CardProductType) => {
-  emit('delete-item', product);
+const handleClickDetail = (product: CardProductType) => {
+  emit('manage-detail', product);
 };
 </script>
 <style lang="less" scoped>

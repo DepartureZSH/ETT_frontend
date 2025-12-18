@@ -96,6 +96,7 @@ const handleClickDelete = (product: CardProductType) => {
 </script>
 <style lang="less" scoped>
 .list-card-item {
+  border: 0.5px solid;
   display: flex;
   flex-direction: column;
   cursor: pointer;
