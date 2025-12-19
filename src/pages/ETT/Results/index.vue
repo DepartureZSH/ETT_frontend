@@ -5,80 +5,32 @@
       <t-space style="width: 100%; margin-top: 20px">
         <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab" @change="onFill">
           <t-tab-panel :value="1" :label="t('form.panel1')" :destroy-on-hide="false" :removable="false">
-            <t-form
-              class="base-form"
-              :data="formData"
-              :rules="FORM_RULES"
-              label-align="top"
-              :label-width="100"
-              @reset="onReset"
-              @submit="onSubmit"
-            >
-              <div class="form-basic-container">
-                <div class="form-basic-item">
-                  <div class="form-basic-container-title">{{ t('form.basic_title') }}</div>
-                  <!-- 表单内容 -->
-                  <t-row class="row-gap" :gutter="[32, 24]">
-                    <t-col :span="6">
-                      <t-form-item :label="BASE_FORM_DATA[0].name" name="name">
-                        <t-input
-                          v-model="formData.name"
-                          :style="{ width: '322px' }"
-                          :placeholder="t('form.placeholder')"
-                          autofocus
-                        />
-                      </t-form-item>
-                    </t-col>
-                    <t-col :span="6">
-                      <t-form-item :label="BASE_FORM_DATA[1].name" name="type">
-                        <t-input
-                          v-model="formData.type"
-                          :style="{ width: '322px' }"
-                          :placeholder="t('form.placeholder')"
-                          autofocus
-                        />
-                      </t-form-item>
-                    </t-col>
-                  </t-row>
-                  <div class="form-basic-container-title form-title-gap">{{ t('form.otherInfo') }}</div>
-                  <div>
-                    <div>
-                      <t-form-item :label="BASE_FORM_DATA[6].name" name="attachment">
-                        <t-upload
-                          v-model="formData.attachment"
-                          action=""
-                          :tips="t('timetable.uploadTips')"
-                          :size-limit="{ size: 1, unit: 'MB' }"
-                          :format-response="formatResponse"
-                          :before-upload="beforeUpload"
-                          @fail="handleFail"
-                        >
-                          <t-button class="form-submit-upload-btn" variant="outline">
-                            {{ t('timetable.uploadFile') }}
-                          </t-button>
-                        </t-upload>
-                      </t-form-item>
-                    </div>
-                    <div>
-                      <t-form-item :label="BASE_FORM_DATA[7].name" name="description">
-                        <t-textarea v-model="formData.description" :height="124" :placeholder="t('form.placeholder')" />
-                      </t-form-item>
-                    </div>
-                  </div>
-                </div>
+            <div v-if="!DetailsLoading" class="form-basic-container">
+              <div class="form-basic-item">
+                <t-descriptions :title="t('form.basic_title')" bordered table-layout="auto">
+                  <t-descriptions-item :label="BASE_FORM_DATA[0].name">{{ formData.name }}</t-descriptions-item>
+                  <t-descriptions-item :label="BASE_FORM_DATA[1].name">{{ formData.type }}</t-descriptions-item>
+                  <t-descriptions-item :label="BASE_FORM_DATA[2].name">{{ formData.owner }}</t-descriptions-item>
+                  <t-descriptions-item :label="BASE_FORM_DATA[3].name">{{ publishDate }}</t-descriptions-item>
+                  <t-descriptions-item :label="BASE_FORM_DATA[4].name">{{ updateDate }}</t-descriptions-item>
+                  <t-descriptions-item :label="BASE_FORM_DATA[5].name">{{ createDate }}</t-descriptions-item>
+                </t-descriptions>
+                <t-divider />
+                <t-descriptions :title="t('form.otherInfo')" layout="vertical" table-layout="auto">
+                  <t-descriptions-item :label="BASE_FORM_DATA[6].name">
+                    <span>
+                      <a :href="formData.attachment[0].url">
+                        {{ formData.attachment[0].name }}
+                      </a>
+                    </span>
+                  </t-descriptions-item>
+                  <t-descriptions-item :label="BASE_FORM_DATA[7].name">{{ formData.description }}</t-descriptions-item>
+                </t-descriptions>
               </div>
-
-              <div class="form-submit-container">
-                <div style="width: 676px; display: flex; justify-content: space-between">
-                  <t-button theme="primary" class="form-submit-confirm" type="submit">
-                    {{ t('form.confirm') }}
-                  </t-button>
-                  <t-button type="reset" class="form-submit-cancel" theme="default" variant="base">
-                    {{ t('form.cancel') }}
-                  </t-button>
-                </div>
-              </div>
-            </t-form>
+            </div>
+            <div v-else>
+              <t-loading />
+            </div>
           </t-tab-panel>
           <t-tab-panel :value="2" :label="formData.DefaultTable.name" :destroy-on-hide="false" :removable="false">
             <t-form
@@ -90,102 +42,6 @@
               @reset="onReset"
               @submit="onSubmit"
             >
-              <div class="form-basic-container">
-                <div class="form-basic-item">
-                  <div class="form-basic-container-title">{{ t('form.basic_config') }}</div>
-                  <!-- 表单内容 -->
-                  <t-row class="row-gap" :gutter="[32, 24]">
-                    <t-col :span="6">
-                      <t-form-item :label="default_config[0].label" name="week">
-                        <t-input-number
-                          v-model="formData.TableConfig.week"
-                          theme="row"
-                          :max="52"
-                          :min="1"
-                          :disabled="false"
-                          style="width: 250px"
-                          :tips="config_tip_week"
-                          @validate="onWeekValidate"
-                        ></t-input-number>
-                      </t-form-item>
-                    </t-col>
-                    <t-col :span="6">
-                      <t-form-item :label="default_config[1].label" name="day">
-                        <t-input-number
-                          v-model="formData.TableConfig.day"
-                          theme="row"
-                          :max="7"
-                          :min="1"
-                          :disabled="false"
-                          style="width: 250px"
-                          :tips="config_tip_day"
-                          @validate="onDayValidate"
-                        ></t-input-number>
-                      </t-form-item>
-                    </t-col>
-                    <!--                    <t-col :span="6"> -->
-                    <!--                      <t-form-item :label="default_config[2].label" name="day"> -->
-                    <!--                        <t-radio-group default-value="1" @change="onRadioChange"> -->
-                    <!--                          <t-radio-button value="1">{{ t('timetable.form.table_type1') }}</t-radio-button> -->
-                    <!--                          <t-radio-button value="2">{{ t('timetable.form.table_type2') }}</t-radio-button> -->
-                    <!--                        </t-radio-group> -->
-                    <!--                      </t-form-item> -->
-                    <!--                    </t-col> -->
-                  </t-row>
-                  <t-divider />
-                  <t-row :gutter="[32, 24]" justify="space-between">
-                    <t-col :span="6">
-                      <t-button size="medium" variant="outline" @click="Default_AddRow">
-                        <template #icon> <add-icon /></template>
-                        {{ t('timetable.form.time_section') }}
-                      </t-button>
-                      <t-button size="medium" variant="outline" @click="onMerge">
-                        <template #icon>
-                          <merge-cells-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
-                        </template>
-                        {{ t('timetable.form.merge') }}
-                      </t-button>
-                    </t-col>
-                    <t-col>
-                      <t-button size="medium" variant="outline" @click="onFill">
-                        <template #icon>
-                          <file-import-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
-                        </template>
-                        {{ t('timetable.form.fill') }}
-                      </t-button>
-                    </t-col>
-                  </t-row>
-                  <div v-for="(item, index) in RowsData" :key="index">
-                    <div style="border: 1px solid #ccc; padding: 10px; margin-top: 10px">
-                      <t-row :gutter="[32, 24]" justify="space-between">
-                        <t-col :span="2">{{ t('timetable.form.time_section') }} {{ index + 1 }}</t-col>
-                        <t-col :span="6">
-                          <div>
-                            {{ t('timetable.form.start') }} - {{ t('timetable.form.end') }}
-                            <t-time-range-picker
-                              v-model="item.range"
-                              class="demos"
-                              clearable
-                              format="HH:mm"
-                              :steps="time_steps"
-                              :tips="item.tip"
-                              allow-input
-                              @change="handleRangePick(item.index)"
-                            />
-                          </div>
-                        </t-col>
-                        <t-col :span="2">
-                          <t-button size="medium" variant="text" @click="onDefaultDel(index)">
-                            <template #icon>
-                              <delete-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
-                            </template>
-                          </t-button>
-                        </t-col>
-                      </t-row>
-                    </div>
-                  </div>
-                </div>
-              </div>
               <div class="table-section">
                 <t-card v-if="!DetailsLoading" :title="formData.DefaultTable.name">
                   <week-table
@@ -292,7 +148,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { AddIcon, DeleteIcon, FileImportIcon, MergeCellsIcon } from 'tdesign-icons-vue-next';
+import { AddIcon, DeleteIcon, MergeCellsIcon } from 'tdesign-icons-vue-next';
 import type {
   BaseTableCellEventContext,
   InputNumberProps,
@@ -321,7 +177,7 @@ import {
 } from '@/pages/ETT/TimeTable/constants';
 
 defineOptions({
-  name: 'TimeTable',
+  name: 'ListResults',
 });
 
 /* --------------------------------Menu-------------------------------------- */
@@ -329,9 +185,12 @@ const value = ref(1);
 /* -----------------------------Main Form------------------------------------ */
 const formData = ref<Timetable>(Default_FORM);
 const DetailsLoading = ref(true);
+const publishDate = ref<string>('');
+const updateDate = ref<string>('');
+const createDate = ref<string>('');
 /* -----------------------------Default Table-------------------------------- */
-const time_steps = ref([1, 5, 1]);
-const default_config = ref<TABLE_CONFIG_Item[]>(Default_Table_config);
+// const time_steps = ref([1, 5, 1]);
+// const default_config = ref<TABLE_CONFIG_Item[]>(Default_Table_config);
 const config_tip_week = ref(Default_Table_config[0].description);
 const config_tip_day = ref(Default_Table_config[1].description);
 const Cells = ref<RowspanAndColspan>({});
@@ -346,6 +205,9 @@ const fetchDetailsData = async (detailId: string) => {
     formData.value = { ...baseInfo };
     formData.value.parentId = baseInfo.index;
     formData.value.index = -1;
+    publishDate.value = new Date(formData.value.publishDate).toLocaleDateString(t('Date'));
+    updateDate.value = new Date(formData.value.updateDate).toLocaleDateString(t('Date'));
+    createDate.value = new Date(formData.value.createDate).toLocaleDateString(t('Date'));
     for (const item of formData.value.DefaultTable.tableData) {
       const Time: string[] = item.Time.split('-');
       const newRow = {
@@ -388,76 +250,76 @@ const onSubmit = (ctx: SubmitContext) => {
     MessagePlugin.success(t('form.onSubmit'));
   }
 };
-const beforeUpload = (file: UploadFile) => {
-  if (!/\.pdf$/.test(file.name) || !/\.xlsx$/.test(file.name)) {
-    MessagePlugin.warning(t('form.beforeUpload'));
-    return false;
-  }
-  if (file.size > 1024 * 1024) {
-    MessagePlugin.warning(t('form.oversize'));
-    return false;
-  }
-  return true;
-};
-const handleFail = (options: UploadFailContext) => {
-  MessagePlugin.error(`${options.file.name} ${t('form.failUpload')}`);
-};
-// 用于格式化接口响应值，error 会被用于上传失败的提示文字；url 表示文件/图片地址
-const formatResponse = (res: any) => {
-  return { ...res, error: `${t('form.failUpload')}`, url: res.url };
-};
+// const beforeUpload = (file: UploadFile) => {
+//   if (!/\.pdf$/.test(file.name) || !/\.xlsx$/.test(file.name)) {
+//     MessagePlugin.warning(t('form.beforeUpload'));
+//     return false;
+//   }
+//   if (file.size > 1024 * 1024) {
+//     MessagePlugin.warning(t('form.oversize'));
+//     return false;
+//   }
+//   return true;
+// };
+// const handleFail = (options: UploadFailContext) => {
+//   MessagePlugin.error(`${options.file.name} ${t('form.failUpload')}`);
+// };
+// // 用于格式化接口响应值，error 会被用于上传失败的提示文字；url 表示文件/图片地址
+// const formatResponse = (res: any) => {
+//   return { ...res, error: `${t('form.failUpload')}`, url: res.url };
+// };
 
 /* -----------------------------Default Table-------------------------------- */
-const onWeekValidate: InputNumberProps['onValidate'] = (p) => {
-  console.info('Validate', p.error);
-  if (p.error) {
-    config_tip_week.value = Default_Table_config[0].error[p.error];
-  } else {
-    config_tip_week.value = Default_Table_config[0].description;
-  }
-};
-
-const onDayValidate: InputNumberProps['onValidate'] = (p) => {
-  console.info('Validate', p.error);
-  if (p.error) {
-    config_tip_day.value = Default_Table_config[1].error[p.error];
-  } else {
-    config_tip_day.value = Default_Table_config[1].description;
-    DetailsLoading.value = true;
-    formData.value.DefaultTable.tableColumns = FullWeekTable.tableColumns.slice(0, formData.value.TableConfig.day + 1);
-    DetailsLoading.value = false;
-    onFill();
-  }
-};
-
-// 添加时间段
-const Default_AddRow = () => {
-  const last_time = RowsData.value[RowsData.value.length - 1].range[1];
-  const newRow: RowsDataItem = {
-    range: [`${last_time}`, `${last_time}`],
-    index: RowsData.value.length,
-    tip: '',
-  };
-  const newTableData: TableData = {
-    Time: `${last_time}-${last_time}`,
-    index: RowsData.value.length,
-  };
-  RowsData.value.push(newRow);
-  formData.value.DefaultTable.tableData.push(newTableData);
-};
-
-// 时间段时间修改
-const handleRangePick = (v: number) => {
-  const index = v;
-  if (index > 0 && RowsData.value[index].range[0] < RowsData.value[index - 1].range[1]) {
-    RowsData.value[index].range = [RowsData.value[index - 1].range[1], RowsData.value[index - 1].range[1]];
-    RowsData.value[index].tip = t('timetable.form.time_tip');
-    return;
-  }
-  const range = RowsData.value[index].range;
-  RowsData.value[index].tip = '';
-  formData.value.DefaultTable.tableData[index].Time = `${range[0]}-${range[1]}`;
-};
+// const onWeekValidate: InputNumberProps['onValidate'] = (p) => {
+//   console.info('Validate', p.error);
+//   if (p.error) {
+//     config_tip_week.value = Default_Table_config[0].error[p.error];
+//   } else {
+//     config_tip_week.value = Default_Table_config[0].description;
+//   }
+// };
+//
+// const onDayValidate: InputNumberProps['onValidate'] = (p) => {
+//   console.info('Validate', p.error);
+//   if (p.error) {
+//     config_tip_day.value = Default_Table_config[1].error[p.error];
+//   } else {
+//     config_tip_day.value = Default_Table_config[1].description;
+//     DetailsLoading.value = true;
+//     formData.value.DefaultTable.tableColumns = FullWeekTable.tableColumns.slice(0, formData.value.TableConfig.day + 1);
+//     DetailsLoading.value = false;
+//     onFill();
+//   }
+// };
+//
+// // 添加时间段
+// const Default_AddRow = () => {
+//   const last_time = RowsData.value[RowsData.value.length - 1].range[1];
+//   const newRow: RowsDataItem = {
+//     range: [`${last_time}`, `${last_time}`],
+//     index: RowsData.value.length,
+//     tip: '',
+//   };
+//   const newTableData: TableData = {
+//     Time: `${last_time}-${last_time}`,
+//     index: RowsData.value.length,
+//   };
+//   RowsData.value.push(newRow);
+//   formData.value.DefaultTable.tableData.push(newTableData);
+// };
+//
+// // 时间段时间修改
+// const handleRangePick = (v: number) => {
+//   const index = v;
+//   if (index > 0 && RowsData.value[index].range[0] < RowsData.value[index - 1].range[1]) {
+//     RowsData.value[index].range = [RowsData.value[index - 1].range[1], RowsData.value[index - 1].range[1]];
+//     RowsData.value[index].tip = t('timetable.form.time_tip');
+//     return;
+//   }
+//   const range = RowsData.value[index].range;
+//   RowsData.value[index].tip = '';
+//   formData.value.DefaultTable.tableData[index].Time = `${range[0]}-${range[1]}`;
+// };
 
 // 单元格点击事件
 const cell_click_merge = (context: BaseTableCellEventContext<TableColumn>) => {
@@ -512,64 +374,64 @@ const cell_click_merge = (context: BaseTableCellEventContext<TableColumn>) => {
 };
 
 // 单元格合并
-const onMerge = () => {
-  if (!('rowIndex' in Cells.value) || Number.isNaN(Cells.value.rowIndex)) {
-    Cells.value = {};
-    for (const colItem of formData.value.DefaultTable.tableColumns) {
-      delete colItem.attrs;
-    }
-    return;
-  }
-  for (let i = 0; i < formData.value.DefaultTable.rowspanAndColspan.length; i++) {
-    const rs_cs = formData.value.DefaultTable.rowspanAndColspan[i];
-    if (rs_cs.colIndex === Cells.value.colIndex && rs_cs.rowIndex === Cells.value.rowIndex) {
-      formData.value.DefaultTable.rowspanAndColspan.splice(i, 1);
-      // 重置选中状态
-      Cells.value = {};
-      for (const colItem of formData.value.DefaultTable.tableColumns) {
-        delete colItem.attrs;
-      }
-      return;
-    }
-  }
-  // 校验是否有有效的起始单元格
-  if (!Cells.value || !('rowIndex' in Cells.value) || Cells.value.rowIndex === undefined) {
-    MessagePlugin.warning(t('timetable.form.selectCellFirst'));
-    return;
-  }
-
-  // 校验是否有有效的合并范围
-  if (
-    !('rowspan' in Cells.value) ||
-    !('colspan' in Cells.value) ||
-    Cells.value.rowspan < 1 ||
-    Cells.value.colspan < 1
-  ) {
-    MessagePlugin.warning(t('timetable.form.invalidMergeRange'));
-    return;
-  }
-
-  const mergeRules = formData.value.DefaultTable.rowspanAndColspan || [];
-  const { rowIndex, colIndex, rowspan, colspan } = Cells.value;
-
-  // 清除范围内已有的冲突合并规则
-  const newRules = mergeRules.filter((rule) => {
-    // 检查规则是否与当前合并范围冲突
-    const ruleRowOverlap = !(rule.rowIndex + (rule.rowspan || 1) <= rowIndex || rule.rowIndex >= rowIndex + rowspan!);
-    const ruleColOverlap = !(rule.colIndex + (rule.colspan || 1) <= colIndex || rule.colIndex >= colIndex + colspan!);
-    return !(ruleRowOverlap && ruleColOverlap);
-  });
-
-  // 添加新的合并规则
-  newRules.push({ rowIndex, colIndex, rowspan, colspan });
-  formData.value.DefaultTable.rowspanAndColspan = newRules;
-
-  // 重置选中状态
-  Cells.value = {};
-  for (const colItem of formData.value.DefaultTable.tableColumns) {
-    delete colItem.attrs;
-  }
-};
+// const onMerge = () => {
+//   if (!('rowIndex' in Cells.value) || Number.isNaN(Cells.value.rowIndex)) {
+//     Cells.value = {};
+//     for (const colItem of formData.value.DefaultTable.tableColumns) {
+//       delete colItem.attrs;
+//     }
+//     return;
+//   }
+//   for (let i = 0; i < formData.value.DefaultTable.rowspanAndColspan.length; i++) {
+//     const rs_cs = formData.value.DefaultTable.rowspanAndColspan[i];
+//     if (rs_cs.colIndex === Cells.value.colIndex && rs_cs.rowIndex === Cells.value.rowIndex) {
+//       formData.value.DefaultTable.rowspanAndColspan.splice(i, 1);
+//       // 重置选中状态
+//       Cells.value = {};
+//       for (const colItem of formData.value.DefaultTable.tableColumns) {
+//         delete colItem.attrs;
+//       }
+//       return;
+//     }
+//   }
+//   // 校验是否有有效的起始单元格
+//   if (!Cells.value || !('rowIndex' in Cells.value) || Cells.value.rowIndex === undefined) {
+//     MessagePlugin.warning(t('timetable.form.selectCellFirst'));
+//     return;
+//   }
+//
+//   // 校验是否有有效的合并范围
+//   if (
+//     !('rowspan' in Cells.value) ||
+//     !('colspan' in Cells.value) ||
+//     Cells.value.rowspan < 1 ||
+//     Cells.value.colspan < 1
+//   ) {
+//     MessagePlugin.warning(t('timetable.form.invalidMergeRange'));
+//     return;
+//   }
+//
+//   const mergeRules = formData.value.DefaultTable.rowspanAndColspan || [];
+//   const { rowIndex, colIndex, rowspan, colspan } = Cells.value;
+//
+//   // 清除范围内已有的冲突合并规则
+//   const newRules = mergeRules.filter((rule) => {
+//     // 检查规则是否与当前合并范围冲突
+//     const ruleRowOverlap = !(rule.rowIndex + (rule.rowspan || 1) <= rowIndex || rule.rowIndex >= rowIndex + rowspan!);
+//     const ruleColOverlap = !(rule.colIndex + (rule.colspan || 1) <= colIndex || rule.colIndex >= colIndex + colspan!);
+//     return !(ruleRowOverlap && ruleColOverlap);
+//   });
+//
+//   // 添加新的合并规则
+//   newRules.push({ rowIndex, colIndex, rowspan, colspan });
+//   formData.value.DefaultTable.rowspanAndColspan = newRules;
+//
+//   // 重置选中状态
+//   Cells.value = {};
+//   for (const colItem of formData.value.DefaultTable.tableColumns) {
+//     delete colItem.attrs;
+//   }
+// };
 
 // 单元格填充
 const onFill = () => {
@@ -588,35 +450,35 @@ const onFill = () => {
 };
 
 // 删除一行
-const onDefaultDel = (index: number) => {
-  // 检查行索引有效
-  console.log('del', index);
-  console.log(formData.value.DefaultTable);
-  if (index < 0 || index >= formData.value.DefaultTable.tableData.length) {
-    return;
-  }
-  // 检查相关合并
-  const mergeRules = formData.value.DefaultTable.rowspanAndColspan || [];
-  formData.value.DefaultTable.rowspanAndColspan = mergeRules.filter((rule) => {
-    return !(rule.rowIndex === index) || !(rule.rowIndex < index && rule.rowIndex + rule.rowspan > index);
-  });
-  // 删除行
-  RowsData.value.splice(index, 1);
-  formData.value.DefaultTable.tableData.splice(index, 1);
-  // 重构所有行index
-  for (let i = 0; i < formData.value.DefaultTable.tableData.length; i++) {
-    formData.value.DefaultTable.tableData[i].index = i;
-  }
-  for (let i = 0; i < formData.value.DefaultTable.rowspanAndColspan.length; i++) {
-    if (formData.value.DefaultTable.rowspanAndColspan[i].rowIndex > index) {
-      formData.value.DefaultTable.rowspanAndColspan[i].rowIndex =
-        formData.value.DefaultTable.rowspanAndColspan[i].rowIndex - 1;
-    }
-  }
-  console.log(formData.value.DefaultTable);
-  onFill();
-  Cells.value = {};
-};
+// const onDefaultDel = (index: number) => {
+//   // 检查行索引有效
+//   console.log('del', index);
+//   console.log(formData.value.DefaultTable);
+//   if (index < 0 || index >= formData.value.DefaultTable.tableData.length) {
+//     return;
+//   }
+//   // 检查相关合并
+//   const mergeRules = formData.value.DefaultTable.rowspanAndColspan || [];
+//   formData.value.DefaultTable.rowspanAndColspan = mergeRules.filter((rule) => {
+//     return !(rule.rowIndex === index) || !(rule.rowIndex < index && rule.rowIndex + rule.rowspan > index);
+//   });
+//   // 删除行
+//   RowsData.value.splice(index, 1);
+//   formData.value.DefaultTable.tableData.splice(index, 1);
+//   // 重构所有行index
+//   for (let i = 0; i < formData.value.DefaultTable.tableData.length; i++) {
+//     formData.value.DefaultTable.tableData[i].index = i;
+//   }
+//   for (let i = 0; i < formData.value.DefaultTable.rowspanAndColspan.length; i++) {
+//     if (formData.value.DefaultTable.rowspanAndColspan[i].rowIndex > index) {
+//       formData.value.DefaultTable.rowspanAndColspan[i].rowIndex =
+//         formData.value.DefaultTable.rowspanAndColspan[i].rowIndex - 1;
+//     }
+//   }
+//   console.log(formData.value.DefaultTable);
+//   onFill();
+//   Cells.value = {};
+// };
 
 /* ---------------------------Custom Table----------------------------------- */
 const editableCellState: TableProps['editableCellState'] = () => {

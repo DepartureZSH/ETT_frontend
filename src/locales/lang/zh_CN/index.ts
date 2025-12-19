@@ -6,6 +6,7 @@ import pages from './pages';
 
 export default {
   lang: '简体中文',
+  Date: 'zh-CN',
   layout,
   pages,
   components,
@@ -63,15 +64,17 @@ export default {
       end: '结束时间',
       time_tip: '开始时间不能小于上一个时间段结束时间',
       children: '多级表头',
-      add: '添加',
+      add: '添加行',
       copy: '复制',
-      delete: '删除',
+      delete: '删除行',
       merge: '合并',
       unmerge: '取消合并',
       fill: '填入课程',
-      fill_prefix: '课程',
+      fill_prefix: '课程时间槽',
       selectCellFirst: '请先选择单元格',
       invalidMergeRange: '无效的合并范围',
+      card_tip1: '(点击单元格复制)',
+      card_tip2: '(点击单元格粘贴)',
     },
   },
   form: {

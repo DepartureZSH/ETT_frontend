@@ -1046,4 +1046,29 @@ export default [
       };
     },
   },
+  {
+    url: '/api/get-classes',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: {
+        ...Mock.mock({
+          list: [
+            {
+              index: 1,
+              name: '语文',
+              description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
+              type: '主课',
+            },
+            {
+              index: 2,
+              name: '数学',
+              description: '为初中阶段的学生提供完整的课程表，适应多样化的教学需求，涵盖各类科目。',
+              type: '主课',
+            },
+          ],
+        }),
+      },
+    }),
+  },
 ] as MockMethod[];

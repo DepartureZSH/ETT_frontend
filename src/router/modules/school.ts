@@ -40,7 +40,7 @@ export default [
       {
         path: 'ClassesCard',
         name: 'ListClasses',
-        component: () => import('@/pages/ETT/TimeTable/form/index.vue'),
+        component: () => import('@/pages/ETT/Classes/index.vue'),
         meta: {
           title: {
             zh_CN: '课程列表',
@@ -51,7 +51,7 @@ export default [
       {
         path: 'RoomsCard',
         name: 'ListRooms',
-        component: () => import('@/pages/ETT/TimeTable/form/index.vue'),
+        component: () => import('@/pages/ETT/Rooms/index.vue'),
         meta: {
           title: {
             zh_CN: '教室列表',
@@ -62,7 +62,7 @@ export default [
       {
         path: 'TeachersCard',
         name: 'ListTeachers',
-        component: () => import('@/pages/ETT/TimeTable/form/index.vue'),
+        component: () => import('@/pages/ETT/Teachers/index.vue'),
         meta: {
           title: {
             zh_CN: '教师列表',
@@ -73,7 +73,7 @@ export default [
       {
         path: 'StudentsCard',
         name: 'ListStudents',
-        component: () => import('@/pages/ETT/TimeTable/form/index.vue'),
+        component: () => import('@/pages/ETT/Students/index.vue'),
         meta: {
           title: {
             zh_CN: '学生列表',
@@ -84,7 +84,7 @@ export default [
       {
         path: 'ConstraintsCard',
         name: 'ListConstraints',
-        component: () => import('@/pages/ETT/TimeTable/form/index.vue'),
+        component: () => import('@/pages/ETT/Constraints/index.vue'),
         meta: {
           title: {
             zh_CN: '约束列表',
@@ -95,7 +95,7 @@ export default [
       {
         path: 'Results',
         name: 'ListResults',
-        component: () => import('@/pages/ETT/TimeTable/form/index.vue'),
+        component: () => import('@/pages/ETT/Results/index.vue'),
         meta: {
           title: {
             zh_CN: '导出课表',

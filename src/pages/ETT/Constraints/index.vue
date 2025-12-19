@@ -1,11 +1,11 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-  $END$
+  <div>
+    <h1>List Constraints</h1>
+  </div>
 </template>
-
-<style scoped lang="less">
-
-</style>
+<script setup lang="ts">
+defineOptions({
+  name: 'ListConstraints',
+});
+</script>
+<style scoped lang="less"></style>

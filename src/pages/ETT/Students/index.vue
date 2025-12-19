@@ -1,11 +1,11 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
-  $END$
+  <div>
+    <h1>List Students</h1>
+  </div>
 </template>
-
-<style scoped lang="less">
-
-</style>
+<script setup lang="ts">
+defineOptions({
+  name: 'ListStudents',
+});
+</script>
+<style scoped lang="less"></style>

@@ -61,9 +61,9 @@ export interface Timetable {
   name?: string; // 模板名称
   type?: string; // 模板类型，如 "小学"、"初中"
   description?: string; // 模板描述
-  createDate?: Date; // 创建日期，格式 YYYY-MM-DD
-  publishDate?: Date; // 发布日期
-  updateDate?: Date; // 更新日期
+  createDate?: Date | string; // 创建日期，格式 YYYY-MM-DD
+  publishDate?: Date | string; // 发布日期
+  updateDate?: Date | string; // 更新日期
   attachment?: UploadProps['value']; // 附件信息
   TableConfig?: TABLECONFIG; // 课程配置
   DefaultTable?: WEEKTABLE; // 默认周课表
@@ -112,4 +112,11 @@ export interface TimetableListResponse {
 export interface TimetableDetailResponse {
   code: number;
   data: TimetableDetail;
+}
+
+export interface Lesson {
+  name?: string;
+  description?: string;
+  type?: string;
+  [key: string]: string | number;
 }

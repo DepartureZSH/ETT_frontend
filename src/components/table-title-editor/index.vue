@@ -18,13 +18,12 @@
               </t-form-item>
             </t-col>
             <t-col :xs="12" :sm="12" :md="12" :lg="12" :xl="6">
-              <!--              TODO -->
-              <t-button class="form-button" size="medium" variant="outline">
+              <t-button class="form-button" size="medium" variant="outline" @click="addChild(Column_Index)">
                 <template #icon> <add-icon /></template>
                 {{ t('timetable.form.children') }}
               </t-button>
               <!--              TODO -->
-              <t-button class="form-button" size="medium" variant="outline">
+              <t-button class="form-button" size="medium" variant="outline" @click="deleteCol(Column_Index)">
                 {{ t('timetable.form.delete') }}
               </t-button>
             </t-col>
@@ -34,6 +33,7 @@
               :table-columns="Column_Item.children"
               :size="[12, 12, 12, 12, 12]"
               :prefix="`${prefix}${Column_Index + 1}-`"
+              @delete-col="deleteCol_($event, Column_Index)"
             />
           </div>
         </t-collapse-panel>
@@ -66,6 +66,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['delete-col']);
+
 const tableColumns = ref(props.tableColumns);
 const size = ref(props.size || [12, 12, 12, 12, 6]);
 const prefix = ref(props.prefix || '');
@@ -77,5 +79,33 @@ watch(
   },
   { deep: true }, // 深度监听列数组的元素变化
 );
+
+const addChild = (Index: number) => {
+  const col = props.tableColumns;
+  const new_col: TableColumn = {
+    colKey: `key${prefix.value}${Index}-${tableColumns.value.length}`,
+    title: t('timetable.form.default_column'),
+    width: '15',
+  };
+  if (!('children' in col[Index])) {
+    col[Index].children = [new_col];
+  } else {
+    col[Index].children.push(new_col);
+    // col[Index].children = [...col[Index].children, new_col];
+  }
+};
+
+const deleteCol_ = (Event: TableColumn[], Index: number) => {
+  if (Event.length === 0) {
+    delete tableColumns.value[Index].children;
+  } else {
+    tableColumns.value[Index].children = Event;
+  }
+};
+
+const deleteCol = (Index: number) => {
+  tableColumns.value.splice(Index, 1);
+  emit('delete-col', tableColumns.value);
+};
 </script>
 <style scoped lang="less"></style>

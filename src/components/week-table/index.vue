@@ -17,7 +17,7 @@
 </template>
 <script lang="tsx" setup>
 // 引入 TDesign 相关组件
-import type { BaseTableCellEventContext, TableProps, TableRowData } from 'tdesign-vue-next';
+import type { BaseTableCellEventContext, PrimaryTableCellEventContext, TableProps, TableRowData } from 'tdesign-vue-next';
 import { ref, watch } from 'vue';
 
 import type { RowspanAndColspan, TableColumn, TableData } from '@/api/model/schoolModel';
@@ -55,17 +55,17 @@ const default_editableCellState: TableProps['editableCellState'] = () => {
   return false;
 };
 
-const cell_click = (context: BaseTableCellEventContext<TableColumn>) => {
+const cell_click = (context: PrimaryTableCellEventContext<TableRowData>) => {
   emit('cell-click', context);
 };
 
 const columns = ref(props.columns);
 const editableCellState = ref(props.editableCellState || default_editableCellState);
+const rowspanAndColspan = ref<RowspanAndColspan[]>(props.rowspanAndColspan || []);
 
-// 将传递的 `rowspanAndColspan` 数组转换成合适的合并逻辑
-const rowspanAndColspanFn: TableProps['rowspanAndColspan'] = ({ rowIndex, colIndex }) => {
+const rowspanAndColspanFn = ref<TableProps['rowspanAndColspan']>(({ rowIndex, colIndex }) => {
   // 遍历父组件传递的合并规则数组
-  for (const rule of props.rowspanAndColspan) {
+  for (const rule of rowspanAndColspan.value) {
     if (rule.colIndex === colIndex && rule.rowIndex === rowIndex) {
       return {
         rowspan: rule.rowspan || 1,
@@ -74,14 +74,35 @@ const rowspanAndColspanFn: TableProps['rowspanAndColspan'] = ({ rowIndex, colInd
     }
   }
   return {};
-};
+});
+
+// 将传递的 `rowspanAndColspan` 数组转换成合适的合并逻辑
+// const rowspanAndColspanFn: TableProps['rowspanAndColspan'] = ({ rowIndex, colIndex }) => {
+//   // 遍历父组件传递的合并规则数组
+//   for (const rule of rowspanAndColspan.value) {
+//     if (rule.colIndex === colIndex && rule.rowIndex === rowIndex) {
+//       return {
+//         rowspan: rule.rowspan || 1,
+//         colspan: rule.colspan || 1,
+//       };
+//     }
+//   }
+//   return {};
+// };
+
+watch(
+  () => props.rowspanAndColspan,
+  (newRowspanAndColspan) => {
+    rowspanAndColspan.value = [...newRowspanAndColspan]; // 解构新数组，强制触发更新
+    columns.value = [...columns.value]; // 解构新数组，强制触发更新
+  },
+  { deep: true }, // 深度监听列数组的元素变化
+);
 
 watch(
   () => props.columns,
   (newCols) => {
-    console.log('watch', newCols);
     columns.value = [...newCols]; // 解构新数组，强制触发更新
-    console.log('watch columns', columns.value);
   },
   { deep: true }, // 深度监听列数组的元素变化
 );

@@ -3,7 +3,7 @@
     <step :current="1" />
     <div>
       <t-space style="width: 100%; margin-top: 20px">
-        <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab">
+        <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab" @change="onFill">
           <t-tab-panel :value="1" :label="t('form.panel1')" :destroy-on-hide="false" :removable="false">
             <t-form
               class="base-form"
@@ -11,7 +11,6 @@
               :rules="FORM_RULES"
               label-align="top"
               :label-width="100"
-              @reset="onReset"
               @submit="onSubmit"
             >
               <div class="form-basic-container">
@@ -67,16 +66,10 @@
                   </div>
                 </div>
               </div>
-
               <div class="form-submit-container">
-                <div style="width: 676px; display: flex; justify-content: space-between">
-                  <t-button theme="primary" class="form-submit-confirm" type="submit">
-                    {{ t('form.confirm') }}
-                  </t-button>
-                  <t-button type="reset" class="form-submit-cancel" theme="default" variant="base">
-                    {{ t('form.cancel') }}
-                  </t-button>
-                </div>
+                <t-button theme="primary" class="form-submit-confirm" type="submit">
+                  {{ t('form.confirm') }}
+                </t-button>
               </div>
             </t-form>
           </t-tab-panel>
@@ -87,7 +80,6 @@
               :rules="FORM_RULES"
               label-align="top"
               :label-width="100"
-              @reset="onReset"
               @submit="onSubmit"
             >
               <div class="form-basic-container">
@@ -175,7 +167,7 @@
                           </div>
                         </t-col>
                         <t-col :span="2">
-                          <t-button size="medium" variant="text">
+                          <t-button size="medium" variant="text" @click="onDefaultDel(index)">
                             <template #icon>
                               <delete-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
                             </template>
@@ -192,69 +184,19 @@
                     :data="formData.DefaultTable.tableData"
                     :columns="formData.DefaultTable.tableColumns"
                     :rowspan-and-colspan="formData.DefaultTable.rowspanAndColspan"
-                    @cell-click="cell_click"
+                    @cell-click="cell_click_merge"
                   />
                 </t-card>
                 <div v-else>
                   <t-loading />
                 </div>
               </div>
-            </t-form>
-          </t-tab-panel>
-          <t-tab-panel
-            v-for="(item, index) in formData.Tables"
-            :key="index"
-            :value="index + 3"
-            :label="item.name"
-            :destroy-on-hide="false"
-            :removable="true"
-          >
-            <div class="timetable-tab-panel">
-              <div class="form-section">
-                <t-form class="base-form" :data="formData" :rules="FORM_RULES" label-align="left">
-                  <!-- 表单行容器：增加间距，响应式适配 -->
-                  <t-row class="form-row" :gutter="[24, 16]">
-                    <t-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24">
-                      <t-form-item :label="t('timetable.form.title')" name="name">
-                        <t-input
-                          v-model="item.name"
-                          class="form-input"
-                          :placeholder="t('timetable.placeholder')"
-                          autofocus
-                        />
-                        <t-button class="form-button" size="medium" variant="outline" @click="addTitle">
-                          <template #icon> <add-icon /></template>
-                          {{ t('timetable.form.columns') }}
-                        </t-button>
-                      </t-form-item>
-                    </t-col>
-                  </t-row>
-                  <t-row class="form-row" :gutter="[24, 16]">
-                    <!-- 表格列配置项：自适应换行，最多3列一行，小屏堆叠 -->
-                    <t-col :xs="12" :sm="12" :md="12" :lg="12" :xl="12">
-                      <table-title-editor :table-columns="item.tableColumns" />
-                    </t-col>
-                  </t-row>
-                </t-form>
+              <div class="form-submit-container">
+                <t-button theme="primary" class="form-submit-confirm" type="submit">
+                  {{ t('form.confirm') }}
+                </t-button>
               </div>
-              <!--              TODO -->
-              <t-card :title="formData.DefaultTable.name">
-                <week-table
-                  :data="formData.DefaultTable.tableData"
-                  :columns="formData.DefaultTable.tableColumns"
-                  :rowspan-and-colspan="formData.DefaultTable.rowspanAndColspan"
-                  :editable-cell-state="editableCellState"
-                />
-              </t-card>
-              <t-card :title="item.name">
-                <week-table
-                  :data="item.tableData"
-                  :columns="item.tableColumns"
-                  :rowspan-and-colspan="item.rowspanAndColspan"
-                  :editable-cell-state="editableCellState"
-                />
-              </t-card>
-            </div>
+            </t-form>
           </t-tab-panel>
         </t-tabs>
       </t-space>
@@ -267,7 +209,6 @@ import type {
   BaseTableCellEventContext,
   InputNumberProps,
   SubmitContext,
-  TableProps,
   TabValue,
   UploadFailContext,
   UploadFile,
@@ -278,7 +219,6 @@ import { onMounted, ref } from 'vue';
 import type { RowspanAndColspan, TableColumn, TableData, Timetable, WEEKTABLE } from '@/api/model/schoolModel';
 import { getTable } from '@/api/school';
 import Step from '@/components/steps/index.vue';
-import TableTitleEditor from '@/components/table-title-editor/index.vue';
 import WeekTable from '@/components/week-table/index.vue';
 import { t } from '@/locales';
 import type { RowsDataItem, TABLE_CONFIG_Item } from '@/pages/ETT/TimeTable/constants';
@@ -348,12 +288,11 @@ const removeTab = (options: { value: TabValue; index: number; e: MouseEvent }) =
 };
 
 /* -----------------------------Main Form------------------------------------ */
-const onReset = () => {
-  MessagePlugin.warning(t('form.onReset'));
-};
+// TODO
 const onSubmit = (ctx: SubmitContext) => {
   if (ctx.validateResult === true) {
     MessagePlugin.success(t('form.onSubmit'));
+    console.log('formData', formData.value);
   }
 };
 const beforeUpload = (file: UploadFile) => {
@@ -406,12 +345,13 @@ const Default_AddRow = () => {
     index: RowsData.value.length,
     tip: '',
   };
-  RowsData.value.push(newRow);
   const newTableData: TableData = {
     Time: `${last_time}-${last_time}`,
     index: RowsData.value.length,
   };
+  RowsData.value.push(newRow);
   formData.value.DefaultTable.tableData.push(newTableData);
+  onFill();
 };
 
 // 时间段时间修改
@@ -428,7 +368,7 @@ const handleRangePick = (v: number) => {
 };
 
 // 单元格点击事件
-const cell_click = (context: BaseTableCellEventContext<TableColumn>) => {
+const cell_click_merge = (context: BaseTableCellEventContext<TableColumn>) => {
   for (const colItem of formData.value.DefaultTable.tableColumns) {
     delete colItem.attrs;
   }
@@ -537,6 +477,7 @@ const onMerge = () => {
   for (const colItem of formData.value.DefaultTable.tableColumns) {
     delete colItem.attrs;
   }
+  onFill();
 };
 
 // 单元格填充
@@ -545,38 +486,55 @@ const onFill = () => {
   for (let i = 1; i < formData.value.DefaultTable.tableColumns.length; i++) {
     const col_key = formData.value.DefaultTable.tableColumns[i].colKey;
     for (let j = 0; j < formData.value.DefaultTable.tableData.length; j++) {
-      // for (const rs_cs of formData.value.DefaultTable.rowspanAndColspan){
-      //   if (rs_cs.rowIndex <)
-      //   if (rs_cs.colIndex < )
-      // }
       formData.value.DefaultTable.tableData[j][col_key] = `${t('timetable.form.fill_prefix')} ${count}`;
       count++;
     }
   }
+  for (let i = 0; i < formData.value.DefaultTable.rowspanAndColspan.length; i++) {
+    const colIndex = formData.value.DefaultTable.rowspanAndColspan[i].colIndex;
+    const col_key = formData.value.DefaultTable.tableColumns[colIndex].colKey;
+    const rowIndex = formData.value.DefaultTable.rowspanAndColspan[i].rowIndex;
+    const colspan = formData.value.DefaultTable.rowspanAndColspan[i].colspan;
+    const rowspan = formData.value.DefaultTable.rowspanAndColspan[i].rowspan;
+    const v = formData.value.DefaultTable.tableData[rowIndex][col_key];
+    for (let j = 0; j < colspan; j++) {
+      for (let k = 0; k < rowspan; k++) {
+        const col_key = formData.value.DefaultTable.tableColumns[colIndex + j].colKey;
+        formData.value.DefaultTable.tableData[rowIndex + k][col_key] = v;
+        count++;
+      }
+    }
+  }
 };
 
-/* ---------------------------Custom Table----------------------------------- */
-const editableCellState: TableProps['editableCellState'] = () => {
-  return true;
-};
-
-const addTitle = () => {
-  const len = formData.value.Tables[value.value - 3].tableColumns.length;
-  const newData = {
-    colKey: `key${len}`,
-    title: t('timetable.form.default_column'),
-    width: '15',
-  };
-  formData.value.Tables[value.value - 3].tableColumns = [
-    ...formData.value.Tables[value.value - 3].tableColumns,
-    newData,
-  ];
-  // formData.value.Tables[value.value - 3].tableColumns.push({
-  //   colKey: `key${len}`,
-  //   title: t('timetable.form.default_column'),
-  //   width: '15',
-  //   children: [],
-  // });
+// 删除一行
+const onDefaultDel = (index: number) => {
+  // 检查行索引有效
+  console.log('del', index);
+  if (index < 0 || index >= formData.value.DefaultTable.tableData.length) {
+    return;
+  }
+  // 检查相关合并
+  const mergeRules = formData.value.DefaultTable.rowspanAndColspan || [];
+  formData.value.DefaultTable.rowspanAndColspan = mergeRules.filter((rule) => {
+    return !(rule.rowIndex === index) && !(rule.rowIndex < index && rule.rowIndex + rule.rowspan > index);
+  });
+  console.log(formData.value.DefaultTable.rowspanAndColspan);
+  // 删除行
+  RowsData.value.splice(index, 1);
+  formData.value.DefaultTable.tableData.splice(index, 1);
+  // 重构所有行index
+  for (let i = 0; i < formData.value.DefaultTable.tableData.length; i++) {
+    formData.value.DefaultTable.tableData[i].index = i;
+  }
+  for (let i = 0; i < formData.value.DefaultTable.rowspanAndColspan.length; i++) {
+    if (formData.value.DefaultTable.rowspanAndColspan[i].rowIndex > index) {
+      formData.value.DefaultTable.rowspanAndColspan[i].rowIndex =
+        formData.value.DefaultTable.rowspanAndColspan[i].rowIndex - 1;
+    }
+  }
+  onFill();
+  Cells.value = {};
 };
 </script>
 <style lang="less" scoped>
