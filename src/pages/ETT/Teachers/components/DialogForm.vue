@@ -6,8 +6,8 @@
         <t-form-item :label="t('lesson.name')" name="name">
           <t-input v-model="formData.name" :style="{ width: '480px' }" />
         </t-form-item>
-        <t-form-item :label="t('lesson.note')" name="note">
-          <t-input v-model="formData.note" :style="{ width: '480px' }" />
+        <t-form-item :label="t('lesson.note')" name="title">
+          <t-input v-model="formData.title" :style="{ width: '480px' }" />
         </t-form-item>
         <t-form-item :label="t('lesson.description')" name="description">
           <t-textarea v-model="formData.description" :style="{ width: '480px' }" />
@@ -26,7 +26,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import type { PropType } from 'vue';
 import { ref, watch } from 'vue';
 
-import type { Lesson } from '@/api/model/schoolModel';
+import type { Staff } from '@/api/model/schoolModel';
 import { t } from '@/locales';
 
 const { visible, data } = defineProps({
@@ -35,23 +35,21 @@ const { visible, data } = defineProps({
     default: false,
   },
   data: {
-    type: Object as PropType<Lesson>,
+    type: Object as PropType<Staff>,
     default: undefined,
   },
 });
 
 const emit = defineEmits(['update:visible', 'submit']);
 
-const INITIAL_DATA: Lesson = {
+const INITIAL_DATA: Staff = {
   index: 0,
   name: '',
-  status: '',
-  description: '',
-  note: '',
+  title: '',
 };
 
 const formVisible = ref(false);
-const formData = ref<Lesson>({ ...INITIAL_DATA });
+const formData = ref<Staff>({ ...INITIAL_DATA });
 
 const onSubmit = ({ validateResult, firstError }: SubmitContext) => {
   if (!firstError) {
@@ -90,7 +88,7 @@ watch(
   },
 );
 
-const rules: FormRules<Lesson> = {
+const rules: FormRules<Staff> = {
   name: [{ required: true, message: '请输入产品名称', type: 'error' }],
 };
 </script>

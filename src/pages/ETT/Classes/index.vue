@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="card-container">
     <div class="list-card-operation">
-      <t-button @click="formDialogVisible = true"> {{ t('pages.listCard.create') }} </t-button>
+      <t-button @click="formDialogVisible = true"> {{ t('lesson.create') }} </t-button>
       <div class="search-input">
-        <t-input v-model="searchValue" :placeholder="t('pages.listCard.placeholder')" clearable>
+        <t-input v-model="searchValue" :placeholder="t('lesson.placeholder')" clearable>
           <template #suffix-icon>
             <search-icon v-if="searchValue === ''" size="var(--td-comp-size-xxxs)" />
           </template>
@@ -11,7 +11,7 @@
       </div>
     </div>
 
-    <dialog-form v-model:visible="formDialogVisible" :data="formData" />
+    <dialog-form v-model:visible="formDialogVisible" :data="formData" @submit="onSubmit" />
 
     <template v-if="pagination.total > 0 && !dataLoading">
       <div class="list-card-items">
@@ -67,8 +67,7 @@ import { computed, onMounted, ref } from 'vue';
 
 import type { Lesson } from '@/api/model/schoolModel';
 import { getClasses } from '@/api/school';
-import type { CardProductType } from '@/components/product-card/index.vue';
-import ProductCard from '@/components/product-card/index.vue';
+import ProductCard from '@/components/class-card/index.vue';
 import { t } from '@/locales';
 
 import DialogForm from './components/DialogForm.vue';
@@ -78,25 +77,25 @@ defineOptions({
 });
 
 const INITIAL_DATA: Lesson = {
+  index: 0,
   name: '',
   status: '',
   description: '',
-  type: '0',
+  note: '',
 };
 
 const pagination = ref({ current: 1, pageSize: 12, total: 0 });
 const deleteProduct = ref(undefined);
 
-const productList = ref([]);
+const productList = ref<Lesson[]>();
 const dataLoading = ref(true);
 
 const fetchData = async () => {
   try {
-    const { list } = await getClasses();
-    productList.value = list;
+    productList.value = await getClasses();
     pagination.value = {
       ...pagination.value,
-      total: list.length,
+      total: productList.value.length,
     };
   } catch (e) {
     console.log(e);
@@ -125,7 +124,7 @@ const onPageSizeChange = (size: number) => {
 const onCurrentChange = (current: number) => {
   pagination.value.current = current;
 };
-const handleDeleteItem = (product: CardProductType) => {
+const handleDeleteItem = (product: Lesson) => {
   confirmVisible.value = true;
   deleteProduct.value = product;
 };
@@ -139,17 +138,31 @@ const onCancel = () => {
   deleteProduct.value = undefined;
   formData.value = { ...INITIAL_DATA };
 };
-const handleManageProduct = (product: CardProductType) => {
+const handleManageProduct = (product: Lesson) => {
   formDialogVisible.value = true;
   formData.value = {
+    index: product.index,
     name: product.name,
-    status: product?.isSetup ? '1' : '0',
     description: product.description,
-    type: product.type.toString(),
+    note: product.note,
   };
+};
+const onSubmit = (product: Lesson) => {
+  console.log(product);
+  for (const item of productList.value) {
+    if (item.index === product.index) {
+      item.name = product.name;
+      item.description = product.description;
+      item.note = product.note;
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
+.card-container {
+  padding: var(--td-comp-paddingTB-xl) var(--td-comp-paddingLR-xl);
+  background: var(--td-bg-color-container);
+}
 .list-card {
   height: 100%;
 

@@ -30,8 +30,8 @@ import type { PropType } from 'vue';
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import AssetLogoFull from '/public/logo.svg';
-import AssetLogo from '/public/t-logo.svg';
+import AssetLogoFull from '@/public/logo.svg';
+import AssetLogo from '@/public/t-logo.svg';
 // import AssetLogoFull from '@/assets/assets-logo-full.svg?component';
 // import AssetLogo from '@/assets/assets-t-logo.svg?component';
 import { prefix } from '@/config/global';

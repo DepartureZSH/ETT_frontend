@@ -1,29 +1,16 @@
 <template>
-  <t-dialog v-model:visible="formVisible" :header="t('pages.listCard.create')" :width="680" :footer="false">
+  <t-dialog v-model:visible="formVisible" :header="t('lesson.create')" :width="680" :footer="false">
     <template #body>
       <!-- 表单内容 -->
       <t-form :data="formData" :rules="rules" :label-width="100" @submit="onSubmit">
-        <t-form-item :label="t('pages.listCard.productName')" name="name">
+        <t-form-item :label="t('lesson.name')" name="name">
           <t-input v-model="formData.name" :style="{ width: '480px' }" />
         </t-form-item>
-        <t-form-item :label="t('pages.listCard.productStatus')" name="status">
-          <t-radio-group v-model="formData.status">
-            <t-radio value="0">{{ t('pages.listCard.productStatusEnum.off') }}</t-radio>
-            <t-radio value="1">{{ t('pages.listCard.productStatusEnum.on') }}</t-radio>
-          </t-radio-group>
+        <t-form-item :label="t('lesson.note')" name="note">
+          <t-input v-model="formData.note" :style="{ width: '480px' }" />
         </t-form-item>
-        <t-form-item :label="t('pages.listCard.productDescription')" name="description">
-          <t-input v-model="formData.description" :style="{ width: '480px' }" />
-        </t-form-item>
-        <t-form-item :label="t('pages.listCard.productType')" name="type">
-          <t-select v-model="formData.type" clearable :style="{ width: '480px' }">
-            <t-option v-for="(item, index) in SELECT_OPTIONS" :key="index" :value="item.value" :label="item.label">
-              {{ item.label }}
-            </t-option>
-          </t-select>
-        </t-form-item>
-        <t-form-item :label="t('pages.listCard.productRemark')" name="mark">
-          <t-textarea v-model="textareaValue" :style="{ width: '480px' }" name="description" />
+        <t-form-item :label="t('lesson.description')" name="description">
+          <t-textarea v-model="formData.description" :style="{ width: '480px' }" />
         </t-form-item>
         <t-form-item style="float: right">
           <t-button variant="outline" @click="onClickCloseBtn">取消</t-button>
@@ -39,16 +26,8 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import type { PropType } from 'vue';
 import { ref, watch } from 'vue';
 
+import type { Lesson } from '@/api/model/schoolModel';
 import { t } from '@/locales';
-
-export interface FormData {
-  name: string;
-  status: string;
-  description: string;
-  type: string;
-  mark: string;
-  amount: number;
-}
 
 const { visible, data } = defineProps({
   visible: {
@@ -56,36 +35,29 @@ const { visible, data } = defineProps({
     default: false,
   },
   data: {
-    type: Object as PropType<FormData>,
+    type: Object as PropType<Lesson>,
     default: undefined,
   },
 });
 
-const emit = defineEmits(['update:visible']);
+const emit = defineEmits(['update:visible', 'submit']);
 
-const INITIAL_DATA: FormData = {
+const INITIAL_DATA: Lesson = {
+  index: 0,
   name: '',
   status: '',
   description: '',
-  type: '',
-  mark: '',
-  amount: 0,
+  note: '',
 };
 
-const SELECT_OPTIONS = [
-  { label: '网关', value: '1' },
-  { label: '人工智能', value: '2' },
-  { label: 'CVM', value: '3' },
-];
-
 const formVisible = ref(false);
-const formData = ref({ ...INITIAL_DATA });
-const textareaValue = ref('');
+const formData = ref<Lesson>({ ...INITIAL_DATA });
 
 const onSubmit = ({ validateResult, firstError }: SubmitContext) => {
   if (!firstError) {
     MessagePlugin.success('提交成功');
     formVisible.value = false;
+    emit('submit', formData.value);
   } else {
     console.log('Errors: ', validateResult);
     MessagePlugin.warning(firstError);
@@ -118,7 +90,7 @@ watch(
   },
 );
 
-const rules: FormRules<FormData> = {
+const rules: FormRules<Lesson> = {
   name: [{ required: true, message: '请输入产品名称', type: 'error' }],
 };
 </script>

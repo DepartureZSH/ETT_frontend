@@ -1,15 +1,15 @@
 <template>
-  <t-dialog v-model:visible="formVisible" :header="t('lesson.create')" :width="680" :footer="false">
+  <t-dialog v-model:visible="formVisible" :header="t('student.create')" :width="680" :footer="false">
     <template #body>
       <!-- 表单内容 -->
       <t-form :data="formData" :rules="rules" :label-width="100" @submit="onSubmit">
-        <t-form-item :label="t('lesson.name')" name="name">
+        <t-form-item :label="t('student.name')" name="name">
           <t-input v-model="formData.name" :style="{ width: '480px' }" />
         </t-form-item>
-        <t-form-item :label="t('lesson.note')" name="title">
-          <t-input v-model="formData.title" :style="{ width: '480px' }" />
+        <t-form-item :label="t('student.note')" name="note">
+          <t-input v-model="formData.note" :style="{ width: '480px' }" />
         </t-form-item>
-        <t-form-item :label="t('lesson.description')" name="description">
+        <t-form-item :label="t('student.description')" name="description">
           <t-textarea v-model="formData.description" :style="{ width: '480px' }" />
         </t-form-item>
         <t-form-item style="float: right">
@@ -26,7 +26,7 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import type { PropType } from 'vue';
 import { ref, watch } from 'vue';
 
-import type { Staff } from '@/api/model/schoolModel';
+import type { Student } from '@/api/model/schoolModel';
 import { t } from '@/locales';
 
 const { visible, data } = defineProps({
@@ -35,21 +35,21 @@ const { visible, data } = defineProps({
     default: false,
   },
   data: {
-    type: Object as PropType<Staff>,
+    type: Object as PropType<Student>,
     default: undefined,
   },
 });
 
 const emit = defineEmits(['update:visible', 'submit']);
 
-const INITIAL_DATA: Staff = {
+const INITIAL_DATA: Student = {
   index: 0,
   name: '',
   title: '',
 };
 
 const formVisible = ref(false);
-const formData = ref<Staff>({ ...INITIAL_DATA });
+const formData = ref<Student>({ ...INITIAL_DATA });
 
 const onSubmit = ({ validateResult, firstError }: SubmitContext) => {
   if (!firstError) {
@@ -88,7 +88,7 @@ watch(
   },
 );
 
-const rules: FormRules<Staff> = {
+const rules: FormRules<Student> = {
   name: [{ required: true, message: '请输入产品名称', type: 'error' }],
 };
 </script>

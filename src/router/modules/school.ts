@@ -38,17 +38,6 @@ export default [
         },
       },
       {
-        path: 'ClassesCard',
-        name: 'ListClasses',
-        component: () => import('@/pages/ETT/Classes/index.vue'),
-        meta: {
-          title: {
-            zh_CN: '课程列表',
-            en_US: 'Classes List',
-          },
-        },
-      },
-      {
         path: 'RoomsCard',
         name: 'ListRooms',
         component: () => import('@/pages/ETT/Rooms/index.vue'),
@@ -67,6 +56,17 @@ export default [
           title: {
             zh_CN: '教师列表',
             en_US: 'Teachers List',
+          },
+        },
+      },
+      {
+        path: 'ClassesCard',
+        name: 'ListClasses',
+        component: () => import('@/pages/ETT/Classes/index.vue'),
+        meta: {
+          title: {
+            zh_CN: '课程列表',
+            en_US: 'Classes List',
           },
         },
       },

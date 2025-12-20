@@ -1,5 +1,5 @@
 import type { CardListResult, ListResult } from '@/api/model/listModel';
-import type { Lesson, Timetable, TimetableDetail } from '@/api/model/schoolModel';
+import type { Lesson, Room, Staff, Student, Timetable, TimetableDetail } from "@/api/model/schoolModel";
 import { request } from '@/utils/request';
 
 const Api = {
@@ -8,7 +8,10 @@ const Api = {
   RecommendsList: '/get-recommended-templates',
   Details: '/get-details',
   Template: '/get-template',
-  Classes: '/get-classes',
+  Rooms: '/get-rooms',
+  Staff: '/get-staffs',
+  Student: '/get-students',
+  Classes: '/get-lessons',
 };
 
 export function getTemplates() {
@@ -41,8 +44,26 @@ export function getTable(id: string) {
   });
 }
 
+export function getRooms() {
+  return request.get<Room[]>({
+    url: Api.Rooms,
+  });
+}
+
+export function getStaff() {
+  return request.get<Staff[]>({
+    url: Api.Staff,
+  });
+}
+
+export function getStudent() {
+  return request.get<Student[]>({
+    url: Api.Student,
+  });
+}
+
 export function getClasses() {
-  return request.get({
+  return request.get<Lesson[]>({
     url: Api.Classes,
   });
 }

@@ -1,38 +1,14 @@
 <template>
   <t-card theme="poster2" :bordered="false">
-    <template #avatar>
-      <t-avatar size="56px">
-        <template #icon>
-          <shop-icon v-if="props.product.type === 1" />
-          <calendar-icon v-if="props.product.type === 2" />
-          <service-icon v-if="props.product.type === 3" />
-          <user-avatar-icon v-if="props.product.type === 4" />
-          <laptop-icon v-if="props.product.type === 5" />
-        </template>
-      </t-avatar>
-    </template>
-    <template #status>
-      <t-tag :theme="props.product.isSetup ? 'success' : 'default'" :disabled="!props.product.isSetup">
-        {{ props.product.isSetup ? t('components.isSetup.on') : t('components.isSetup.off') }}
-      </t-tag>
-    </template>
     <template #content>
       <p class="list-card-item_detail--name">{{ props.product.name }}</p>
       <p class="list-card-item_detail--desc">{{ props.product.description }}</p>
     </template>
     <template #footer>
-      <t-avatar-group cascading="left-up" :max="2">
-        <t-avatar>{{ typeMap[product.type - 1] }}</t-avatar>
-        <t-avatar
-          ><template #icon>
-            <add-icon />
-          </template>
-        </t-avatar>
-      </t-avatar-group>
+      <t-tag>{{ props.product.note }}</t-tag>
     </template>
     <template #actions>
       <t-dropdown
-        :disabled="!props.product.isSetup"
         trigger="click"
         :options="[
           {
@@ -47,7 +23,7 @@
           },
         ]"
       >
-        <t-button theme="default" :disabled="!props.product.isSetup" shape="square" variant="text">
+        <t-button theme="default" shape="square" variant="text">
           <more-icon />
         </t-button>
       </t-dropdown>
@@ -55,42 +31,26 @@
   </t-card>
 </template>
 <script setup lang="ts">
-import {
-  AddIcon,
-  CalendarIcon,
-  LaptopIcon,
-  MoreIcon,
-  ServiceIcon,
-  ShopIcon,
-  UserAvatarIcon,
-} from 'tdesign-icons-vue-next';
+import { MoreIcon } from 'tdesign-icons-vue-next';
 import type { PropType } from 'vue';
 
+import type { Lesson } from '@/api/model/schoolModel';
 import { t } from '@/locales';
-
-export interface CardProductType {
-  type: number;
-  isSetup: boolean;
-  description: string;
-  name: string;
-}
 
 const props = defineProps({
   product: {
-    type: Object as PropType<CardProductType>,
+    type: Object as PropType<Lesson>,
     default: undefined,
   },
 });
 
 const emit = defineEmits(['manage-product', 'delete-item']);
 
-const typeMap = ['A', 'B', 'C', 'D', 'E'];
-
-const handleClickManage = (product: CardProductType) => {
+const handleClickManage = (product: Lesson) => {
   emit('manage-product', product);
 };
 
-const handleClickDelete = (product: CardProductType) => {
+const handleClickDelete = (product: Lesson) => {
   emit('delete-item', product);
 };
 </script>

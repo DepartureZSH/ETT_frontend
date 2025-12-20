@@ -114,9 +114,76 @@ export interface TimetableDetailResponse {
   data: TimetableDetail;
 }
 
-export interface Lesson {
+export interface TimeSlot {
+  days?: string;
+  start?: number;
+  length?: number;
+  weeks?: string;
+  penalty?: number;
+}
+
+export interface Travel {
+  room?: number;
+  value?: number;
+}
+
+export interface Room {
+  index?: number;
   name?: string;
   description?: string;
-  type?: string;
+  capacity?: number;
+  travel?: Travel[];
+  unavailable?: TimeSlot[];
+  note?: string;
+  [key: string]: string | number | Travel[] | TimeSlot[];
+}
+
+export interface Staff {
+  index?: number;
+  name?: string;
+  description?: string;
+  title?: string;
   [key: string]: string | number;
+}
+
+export interface Student {
+  index?: number;
+  name?: string;
+  description?: string;
+  note?: string;
+  lessons?: Lesson[];
+  assignment_lesson?: Lesson;
+  [key: string]: string | number | Lesson[] | Lesson;
+}
+
+export interface Lesson {
+  index?: number;
+  name?: string;
+  description?: string;
+  note?: string;
+  staff?: Staff;
+  Rooms?: Room[];
+  timeslots?: TimeSlot[];
+  assignment_room?: Room;
+  assignment_time?: TimeSlot;
+  assignment_Students?: Student[];
+  [key: string]: string | number | Staff | Room[] | TimeSlot[] | Student[] | Room | TimeSlot;
+}
+
+export interface Distribution {
+  index?: number;
+  type?: string;
+  penalty?: number;
+  required?: boolean;
+  description?: string;
+  note?: string;
+  lessons?: Lesson[];
+  [key: string]: string | number | boolean | Lesson[];
+}
+
+export interface Solution {
+  index?: number;
+  name?: string;
+  Lessons?: Lesson[];
+  [key: string]: string | number | Lesson[];
 }

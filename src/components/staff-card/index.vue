@@ -3,31 +3,33 @@
     <template #avatar>
       <t-avatar size="56px">
         <template #icon>
-          <home-icon />
+          <user1-icon />
         </template>
       </t-avatar>
     </template>
     <template #status>
-      <t-tag>{{ props.product.note }}</t-tag>
+      <t-tag>{{ props.product.title }}</t-tag>
     </template>
     <template #content>
-      <p class="list-card-item_detail--name">{{ `${t('room.name')}: ${props.product.name}` }}</p>
-      <p class="list-card-item_detail--desc">{{ `${t('room.description')}: ${props.product.description || '...'}` }}</p>
+      <p class="list-card-item_detail--name">{{ `${t('staff.name')}: ${props.product.name}` }}</p>
+      <p class="list-card-item_detail--desc">
+        {{ `${t('staff.description')}: ${props.product.description || '...'}` }}
+      </p>
     </template>
     <template #footer> </template>
     <template #actions></template>
   </t-card>
 </template>
 <script setup lang="ts">
-import { HomeIcon } from 'tdesign-icons-vue-next';
+import { User1Icon } from 'tdesign-icons-vue-next';
 import type { PropType } from 'vue';
 
-import type { Room } from '@/api/model/schoolModel';
+import type { Staff } from '@/api/model/schoolModel';
 import { t } from '@/locales';
 
 const props = defineProps({
   product: {
-    type: Object as PropType<Room>,
+    type: Object as PropType<Staff>,
     default: undefined,
   },
 });

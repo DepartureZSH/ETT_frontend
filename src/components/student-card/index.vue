@@ -3,17 +3,17 @@
     <template #avatar>
       <t-avatar size="56px">
         <template #icon>
-          <user1-icon />
+          <education-icon />
         </template>
       </t-avatar>
     </template>
     <template #status>
-      <t-tag>{{ props.product.title }}</t-tag>
+      <t-tag>{{ props.product.note }}</t-tag>
     </template>
     <template #content>
-      <p class="list-card-item_detail--name">{{ `${t('staff.name')}: ${props.product.name}` }}</p>
+      <p class="list-card-item_detail--name">{{ `${t('student.name')}: ${props.product.name}` }}</p>
       <p class="list-card-item_detail--desc">
-        {{ `${t('staff.description')}: ${props.product.description || '...'}` }}
+        {{ `${t('student.description')}: ${props.product.description || '...'}` }}
       </p>
     </template>
     <template #footer> </template>
@@ -21,15 +21,15 @@
   </t-card>
 </template>
 <script setup lang="ts">
-import { User1Icon } from 'tdesign-icons-vue-next';
+import { EducationIcon } from 'tdesign-icons-vue-next';
 import type { PropType } from 'vue';
 
-import type { Staff } from '@/api/model/schoolModel';
+import type { Student } from '@/api/model/schoolModel';
 import { t } from '@/locales';
 
 const props = defineProps({
   product: {
-    type: Object as PropType<Staff>,
+    type: Object as PropType<Student>,
     default: undefined,
   },
 });

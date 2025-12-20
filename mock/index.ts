@@ -1047,28 +1047,109 @@ export default [
     },
   },
   {
-    url: '/api/get-classes',
+    url: '/api/get-rooms',
     method: 'get',
     response: () => ({
       code: 0,
-      data: {
-        ...Mock.mock({
-          list: [
+      data: [
+        {
+          index: 1,
+          name: '101',
+          capacity: 50,
+          note: '主教室',
+        },
+        {
+          index: 2,
+          name: '102',
+          capacity: 30,
+          note: '实验室',
+        },
+      ],
+    }),
+  },
+  {
+    url: '/api/get-staffs',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: [
+        {
+          index: 1,
+          name: '张三',
+          title: '教师',
+        },
+        {
+          index: 2,
+          name: '李四',
+          title: '教师',
+        },
+      ],
+    }),
+  },
+  {
+    url: '/api/get-students',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: [
+        {
+          index: 1,
+          name: '小明',
+          lessons: [
+            {
+              index: 0,
+              name: '语文',
+            },
             {
               index: 1,
+              name: '数学',
+            },
+          ],
+        },
+        {
+          index: 2,
+          name: '小红',
+          lessons: [
+            {
+              index: 0,
               name: '语文',
-              description: '适用于小学阶段的课程安排，涵盖所有主要学科，包括语文、数学、英语等。',
-              type: '主课',
             },
             {
               index: 2,
-              name: '数学',
-              description: '为初中阶段的学生提供完整的课程表，适应多样化的教学需求，涵盖各类科目。',
-              type: '主课',
+              name: '英语',
             },
           ],
-        }),
-      },
+        },
+      ],
+    }),
+  },
+  {
+    url: '/api/get-lessons',
+    method: 'get',
+    response: () => ({
+      code: 0,
+      data: [
+        {
+          index: 1,
+          name: '语文',
+          staff: {
+            index: 1,
+            name: '张三',
+            title: '教师',
+          },
+          note: '主课',
+        },
+        {
+          index: 2,
+          name: '数学',
+          staff: {
+            index: 1,
+            name: '张三',
+            title: '教师',
+          },
+          note: '主课',
+        },
+      ],
     }),
   },
 ] as MockMethod[];
