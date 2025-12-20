@@ -46,6 +46,11 @@
       <t-loading size="large" text="加载数据中..." />
     </div>
 
+    <div v-else-if="productList === undefined || productList.length === 0" class="list-card-empty">
+      <t-space direction="vertical" align="center">
+        <t-empty />
+      </t-space>
+    </div>
     <t-dialog
       v-model:visible="confirmVisible"
       header="确认删除所选产品？"
@@ -88,11 +93,18 @@ const dataLoading = ref(true);
 
 const fetchData = async () => {
   try {
-    productList.value = await getRooms();
-    pagination.value = {
-      ...pagination.value,
-      total: productList.value.length,
-    };
+    const data = await getRooms();
+    console.log(data);
+    // getRooms失败
+    if (data.code === 'ERR_BAD_RESPONSE') {
+      dataLoading.value = false;
+    } else {
+      productList.value = await getRooms();
+      pagination.value = {
+        ...pagination.value,
+        total: productList.value.length,
+      };
+    }
   } catch (e) {
     console.log(e);
   } finally {
@@ -184,6 +196,14 @@ const onSubmit = (product: Room) => {
   }
 
   &-loading {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-empty {
     height: 100%;
     width: 100%;
     display: flex;

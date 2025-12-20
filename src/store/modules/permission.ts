@@ -41,7 +41,7 @@ export const usePermissionStore = defineStore('permission', {
     async buildAsyncRoutes() {
       try {
         // 发起菜单权限请求 获取菜单列表
-        const asyncRoutes: Array<RouteItem> = (await getMenuList()).list;
+        const asyncRoutes: Array<RouteItem> = [];
         this.asyncRoutes = transformObjectToRoute(asyncRoutes);
         // 过滤指定的路由项
         // this.asyncRoutes = filterRoutesByPath(this.asyncRoutes, REMOVED_PATHS);

@@ -46,6 +46,12 @@
       <t-loading size="large" text="加载数据中..." />
     </div>
 
+    <div v-else-if="productList === undefined || productList.length === 0" class="list-card-empty">
+      <t-space direction="vertical" align="center">
+        <t-empty />
+      </t-space>
+    </div>
+
     <t-dialog
       v-model:visible="confirmVisible"
       header="确认删除所选产品？"
@@ -180,6 +186,14 @@ const onSubmit = (product: Student) => {
   }
 
   &-loading {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &-empty {
     height: 100%;
     width: 100%;
     display: flex;

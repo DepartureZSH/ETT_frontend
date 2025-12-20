@@ -28,8 +28,13 @@
                 </t-descriptions>
               </div>
             </div>
-            <div v-else>
+            <div v-else-if="DetailsLoading">
               <t-loading />
+            </div>
+            <div v-else-if="formData === undefined || productList.length === 0" class="list-card-empty">
+              <t-space direction="vertical" align="center">
+                <t-empty />
+              </t-space>
             </div>
           </t-tab-panel>
           <t-tab-panel :value="2" :label="formData.DefaultTable.name" :destroy-on-hide="false" :removable="false">

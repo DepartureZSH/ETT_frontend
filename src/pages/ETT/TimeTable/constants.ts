@@ -143,10 +143,10 @@ export const Default_FORM: Timetable = {
   name: '',
   type: '',
   owner: '', // 用户
-  publishDate: new Date(), // 发布时间
-  updateDate: new Date(), // 更新时间
-  createDate: new Date(), // 创建时间
-  attachment: [] as UploadProps['value'], // 附件
+  publishDate: '', // 发布时间
+  updateDate: '', // 更新时间
+  createDate: '', // 创建时间
+  attachment: [{ name: '', url: '' }] as UploadProps['value'], // 附件
   description: '', // 描述
   TableConfig: Default_Table_Config, // 课程配置
   DefaultTable: Default_Table, // 默认周课表

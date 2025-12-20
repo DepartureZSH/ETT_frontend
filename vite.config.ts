@@ -11,7 +11,7 @@ const CWD = process.cwd();
 
 // https://vitejs.dev/config/
 export default ({ mode }: ConfigEnv): UserConfig => {
-  const { VITE_BASE_URL, VITE_API_URL_PREFIX } = loadEnv(mode, CWD);
+  const { VITE_BASE_URL, VITE_API_URL, VITE_API_URL_PREFIX } = loadEnv(mode, CWD);
   return {
     base: VITE_BASE_URL,
     resolve: {
@@ -37,7 +37,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       vueJsx(),
       viteMockServe({
         mockPath: 'mock',
-        enable: true,
+        enable: false,
       }),
       svgLoader(),
     ],
@@ -45,8 +45,13 @@ export default ({ mode }: ConfigEnv): UserConfig => {
     server: {
       port: 3002,
       host: '0.0.0.0',
+      // port: 8000,
+      // host: '192.168.8.238',
       proxy: {
-        [VITE_API_URL_PREFIX]: 'http://127.0.0.1:3000/',
+        '/api': {
+          target: 'http://192.168.8.238:8000',
+          changeOrigin: true,
+        },
       },
     },
   };
