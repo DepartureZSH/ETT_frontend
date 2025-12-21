@@ -8,6 +8,7 @@ const Api = {
   RecommendsList: '/school/get-recommended-templates',
   Details: '/school/get-details',
   Template: '/school/get-template',
+  Create_Template: '/school/create-timetable',
   Rooms: '/school/get-rooms',
   Staff: '/school/get-staffs',
   Student: '/school/get-students',
@@ -41,6 +42,13 @@ export function getDetails(id: string) {
 export function getTable(id: string) {
   return request.get<Timetable | any>({
     url: `${Api.Template}/${id}`,
+  });
+}
+
+export function createTable(data: Timetable) {
+  return request.post<Timetable | any>({
+    url: Api.Create_Template,
+    data,
   });
 }
 

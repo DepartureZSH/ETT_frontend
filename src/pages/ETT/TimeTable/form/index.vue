@@ -5,177 +5,139 @@
       <t-space style="width: 100%; margin-top: 20px">
         <t-tabs v-model="value" theme="card" :addable="true" @add="addTab" @remove="removeTab" @change="onFill">
           <t-tab-panel :value="1" :label="t('form.panel1')" :destroy-on-hide="false" :removable="false">
-            <t-form
-              class="base-form"
-              :data="formData"
-              :rules="FORM_RULES"
-              label-align="top"
-              :label-width="100"
-              @submit="onSubmit"
-            >
-              <div class="form-basic-container">
-                <div class="form-basic-item">
-                  <div class="form-basic-container-title">{{ t('form.basic_title') }}</div>
-                  <!-- 表单内容 -->
-                  <t-row class="row-gap" :gutter="[32, 24]">
-                    <t-col :span="6">
-                      <t-form-item :label="BASE_FORM_DATA[0].name" name="name">
-                        <t-input
-                          v-model="formData.name"
-                          :style="{ width: '322px' }"
-                          :placeholder="t('form.placeholder')"
-                          autofocus
-                        />
-                      </t-form-item>
-                    </t-col>
-                    <t-col :span="6">
-                      <t-form-item :label="BASE_FORM_DATA[1].name" name="type">
-                        <t-input
-                          v-model="formData.type"
-                          :style="{ width: '322px' }"
-                          :placeholder="t('form.placeholder')"
-                          autofocus
-                        />
-                      </t-form-item>
-                    </t-col>
-                  </t-row>
-                  <div class="form-basic-container-title form-title-gap">{{ t('form.otherInfo') }}</div>
-                  <div>
+            <div v-if="!FormSaved">
+              <t-form
+                class="base-form"
+                :data="formData"
+                :rules="FORM_RULES"
+                label-align="top"
+                :label-width="100"
+                @submit="onFormSubmit"
+              >
+                <div class="form-basic-container">
+                  <div class="form-basic-item">
+                    <div class="form-basic-container-title">{{ t('form.basic_title') }}</div>
+                    <!-- 表单内容 -->
+                    <t-row class="row-gap" :gutter="[32, 24]">
+                      <t-col :span="6">
+                        <t-form-item :label="BASE_FORM_DATA[0].name" name="name">
+                          <t-input
+                            v-model="formData.name"
+                            :style="{ width: '322px' }"
+                            :placeholder="t('form.placeholder')"
+                            autofocus
+                          />
+                        </t-form-item>
+                      </t-col>
+                      <t-col :span="6">
+                        <t-form-item :label="BASE_FORM_DATA[1].name" name="type">
+                          <t-input
+                            v-model="formData.type"
+                            :style="{ width: '322px' }"
+                            :placeholder="t('form.placeholder')"
+                            autofocus
+                          />
+                        </t-form-item>
+                      </t-col>
+                    </t-row>
+                    <div class="form-basic-container-title form-title-gap">{{ t('form.otherInfo') }}</div>
                     <div>
-                      <t-form-item :label="BASE_FORM_DATA[6].name" name="attachment">
-                        <t-upload
-                          v-model="formData.attachment"
-                          action=""
-                          :tips="t('timetable.uploadTips')"
-                          :size-limit="{ size: 1, unit: 'MB' }"
-                          :format-response="formatResponse"
-                          :before-upload="beforeUpload"
-                          @fail="handleFail"
-                        >
-                          <t-button class="form-submit-upload-btn" variant="outline">
-                            {{ t('timetable.uploadFile') }}
-                          </t-button>
-                        </t-upload>
-                      </t-form-item>
-                    </div>
-                    <div>
-                      <t-form-item :label="BASE_FORM_DATA[7].name" name="description">
-                        <t-textarea v-model="formData.description" :height="124" :placeholder="t('form.placeholder')" />
-                      </t-form-item>
+                      <div>
+                        <t-form-item :label="BASE_FORM_DATA[6].name" name="attachment">
+                          <t-upload
+                            v-model="formData.attachment"
+                            action=""
+                            :tips="t('timetable.uploadTips')"
+                            :size-limit="{ size: 1, unit: 'MB' }"
+                            :format-response="formatResponse"
+                            :before-upload="beforeUpload"
+                            @fail="handleFail"
+                          >
+                            <t-button class="form-submit-upload-btn" variant="outline">
+                              {{ t('timetable.uploadFile') }}
+                            </t-button>
+                          </t-upload>
+                        </t-form-item>
+                      </div>
+                      <div>
+                        <t-form-item :label="BASE_FORM_DATA[7].name" name="description">
+                          <t-textarea
+                            v-model="formData.description"
+                            :height="124"
+                            :placeholder="t('form.placeholder')"
+                          />
+                        </t-form-item>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="form-submit-container">
-                <t-button theme="primary" class="form-submit-confirm" type="submit">
-                  {{ t('form.confirm') }}
-                </t-button>
-              </div>
-            </t-form>
-          </t-tab-panel>
-          <t-tab-panel :value="2" :label="formData.DefaultTable.name" :destroy-on-hide="false" :removable="false">
-            <t-form
-              class="base-form"
-              :data="formData.TableConfig"
-              :rules="FORM_RULES"
-              label-align="top"
-              :label-width="100"
-              @submit="onSubmit"
-            >
+                <div class="table-section">
+                  <t-card v-if="!DetailsLoading" :title="formData.DefaultTable.name">
+                    <template #actions>
+                      <t-button v-if="!TableSaved" theme="primary" variant="text" @click="onSwitch">{{
+                        t('form.edit')
+                      }}</t-button>
+                    </template>
+                    <week-table
+                      :data="formData.DefaultTable.tableData"
+                      :columns="formData.DefaultTable.tableColumns"
+                      :rowspan-and-colspan="formData.DefaultTable.rowspanAndColspan"
+                    />
+                  </t-card>
+                  <div v-else>
+                    <t-loading />
+                  </div>
+                </div>
+                <div class="form-submit-container">
+                  <t-button theme="primary" class="form-submit-confirm" type="submit">
+                    {{ t('form.confirm') }}
+                  </t-button>
+                </div>
+              </t-form>
+            </div>
+            <div v-else>
               <div class="form-basic-container">
                 <div class="form-basic-item">
-                  <div class="form-basic-container-title">{{ t('form.basic_config') }}</div>
-                  <!-- 表单内容 -->
-                  <t-row class="row-gap" :gutter="[32, 24]">
-                    <t-col :span="6">
-                      <t-form-item :label="default_config[0].label" name="week">
-                        <t-input-number
-                          v-model="formData.TableConfig.week"
-                          theme="row"
-                          :max="52"
-                          :min="1"
-                          :disabled="false"
-                          style="width: 250px"
-                          :tips="config_tip_week"
-                          @validate="onWeekValidate"
-                        ></t-input-number>
-                      </t-form-item>
-                    </t-col>
-                    <t-col :span="6">
-                      <t-form-item :label="default_config[1].label" name="day">
-                        <t-input-number
-                          v-model="formData.TableConfig.day"
-                          theme="row"
-                          :max="7"
-                          :min="1"
-                          :disabled="false"
-                          style="width: 250px"
-                          :tips="config_tip_day"
-                          @validate="onDayValidate"
-                        ></t-input-number>
-                      </t-form-item>
-                    </t-col>
-                    <!--                    <t-col :span="6"> -->
-                    <!--                      <t-form-item :label="default_config[2].label" name="day"> -->
-                    <!--                        <t-radio-group default-value="1" @change="onRadioChange"> -->
-                    <!--                          <t-radio-button value="1">{{ t('timetable.form.table_type1') }}</t-radio-button> -->
-                    <!--                          <t-radio-button value="2">{{ t('timetable.form.table_type2') }}</t-radio-button> -->
-                    <!--                        </t-radio-group> -->
-                    <!--                      </t-form-item> -->
-                    <!--                    </t-col> -->
-                  </t-row>
+                  <t-descriptions :title="t('form.basic_title')" bordered table-layout="auto">
+                    <t-descriptions-item :label="BASE_FORM_DATA[0].name">{{ formData.name }}</t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[1].name">{{ formData.type }}</t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[2].name">{{ formData.owner }}</t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[3].name">
+                      <div v-if="formData.publishDate">
+                        {{ new Date(formData.publishDate).toLocaleDateString(t('Date')) }}
+                      </div>
+                      <div v-else>-</div>
+                    </t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[4].name">
+                      <div v-if="formData.updateDate">
+                        {{ new Date(formData.updateDate).toLocaleDateString(t('Date')) }}
+                      </div>
+                      <div v-else>-</div>
+                    </t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[5].name">
+                      <div v-if="formData.createDate">
+                        {{ new Date(formData.createDate).toLocaleDateString(t('Date')) }}
+                      </div>
+                      <div v-else>-</div>
+                    </t-descriptions-item>
+                  </t-descriptions>
                   <t-divider />
-                  <t-row :gutter="[32, 24]" justify="space-between">
-                    <t-col :span="6">
-                      <t-button size="medium" variant="outline" @click="Default_AddRow">
-                        <template #icon> <add-icon /></template>
-                        {{ t('timetable.form.time_section') }}
-                      </t-button>
-                      <t-button size="medium" variant="outline" @click="onMerge">
-                        <template #icon>
-                          <merge-cells-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
+                  <t-descriptions :title="t('form.otherInfo')" layout="vertical" table-layout="auto">
+                    <t-descriptions-item
+                      v-if="formData.attachment && formData.attachment[0]"
+                      :label="BASE_FORM_DATA[6].name"
+                    >
+                      <t-link theme="primary" underline :href="formData.attachment[0].url">
+                        <template #prefix-icon>
+                          <link-icon />
                         </template>
-                        {{ t('timetable.form.merge') }}
-                      </t-button>
-                    </t-col>
-                    <t-col>
-                      <t-button size="medium" variant="outline" @click="onFill">
-                        <template #icon>
-                          <file-import-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
-                        </template>
-                        {{ t('timetable.form.fill') }}
-                      </t-button>
-                    </t-col>
-                  </t-row>
-                  <div v-for="(item, index) in RowsData" :key="index">
-                    <div style="border: 1px solid #ccc; padding: 10px; margin-top: 10px">
-                      <t-row :gutter="[32, 24]" justify="space-between">
-                        <t-col :span="2">{{ t('timetable.form.time_section') }} {{ index + 1 }}</t-col>
-                        <t-col :span="6">
-                          <div>
-                            {{ t('timetable.form.start') }} - {{ t('timetable.form.end') }}
-                            <t-time-range-picker
-                              v-model="item.range"
-                              class="demos"
-                              clearable
-                              format="HH:mm"
-                              :steps="time_steps"
-                              :tips="item.tip"
-                              allow-input
-                              @change="handleRangePick(item.index)"
-                            />
-                          </div>
-                        </t-col>
-                        <t-col :span="2">
-                          <t-button size="medium" variant="text" @click="onDefaultDel(index)">
-                            <template #icon>
-                              <delete-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
-                            </template>
-                          </t-button>
-                        </t-col>
-                      </t-row>
-                    </div>
-                  </div>
+                        {{ formData.attachment[0].name }}
+                      </t-link>
+                    </t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[7].name">{{
+                      formData.description
+                    }}</t-descriptions-item>
+                  </t-descriptions>
                 </div>
               </div>
               <div class="table-section">
@@ -184,7 +146,6 @@
                     :data="formData.DefaultTable.tableData"
                     :columns="formData.DefaultTable.tableColumns"
                     :rowspan-and-colspan="formData.DefaultTable.rowspanAndColspan"
-                    @cell-click="cell_click_merge"
                   />
                 </t-card>
                 <div v-else>
@@ -192,11 +153,167 @@
                 </div>
               </div>
               <div class="form-submit-container">
-                <t-button theme="primary" class="form-submit-confirm" type="submit">
-                  {{ t('form.confirm') }}
+                <div class="form-submit-sub">
+                  <t-button theme="default" class="form-submit-confirm" @click="back_edit">
+                    {{ t('form.edit') }}
+                  </t-button>
+                  <div>
+                    <t-button theme="primary" class="form-submit-confirm" @click="onSave">
+                      {{ t('form.save') }}
+                    </t-button>
+                    <t-button theme="primary" class="form-submit-confirm">
+                      {{ t('form.publish') }}
+                    </t-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </t-tab-panel>
+          <t-tab-panel :value="2" :label="formData.DefaultTable.name" :destroy-on-hide="false" :removable="false">
+            <div v-if="!TableSaved">
+              <t-form
+                class="base-form"
+                :data="formData.TableConfig"
+                :rules="CONFIG_RULES"
+                label-align="top"
+                :label-width="100"
+                @submit="onTableSubmit"
+              >
+                <div class="form-basic-container">
+                  <div class="form-basic-item">
+                    <div class="form-basic-container-title">{{ t('form.basic_config') }}</div>
+                    <!-- 表单内容 -->
+                    <t-row class="row-gap" :gutter="[32, 24]">
+                      <t-col :span="6">
+                        <t-form-item :label="default_config[0].label" name="week">
+                          <t-input-number
+                            v-model="formData.TableConfig.week"
+                            theme="row"
+                            :max="52"
+                            :min="1"
+                            :disabled="false"
+                            style="width: 250px"
+                            :tips="config_tip_week"
+                            @validate="onWeekValidate"
+                          ></t-input-number>
+                        </t-form-item>
+                      </t-col>
+                      <t-col :span="6">
+                        <t-form-item :label="default_config[1].label" name="day">
+                          <t-input-number
+                            v-model="formData.TableConfig.day"
+                            theme="row"
+                            :max="7"
+                            :min="1"
+                            :disabled="false"
+                            style="width: 250px"
+                            :tips="config_tip_day"
+                            @validate="onDayValidate"
+                          ></t-input-number>
+                        </t-form-item>
+                      </t-col>
+                      <!--                    <t-col :span="6"> -->
+                      <!--                      <t-form-item :label="default_config[2].label" name="day"> -->
+                      <!--                        <t-radio-group default-value="1" @change="onRadioChange"> -->
+                      <!--                          <t-radio-button value="1">{{ t('timetable.form.table_type1') }}</t-radio-button> -->
+                      <!--                          <t-radio-button value="2">{{ t('timetable.form.table_type2') }}</t-radio-button> -->
+                      <!--                        </t-radio-group> -->
+                      <!--                      </t-form-item> -->
+                      <!--                    </t-col> -->
+                    </t-row>
+                    <t-divider />
+                    <t-row :gutter="[32, 24]" justify="space-between">
+                      <t-col :span="6">
+                        <t-button size="medium" variant="outline" @click="Default_AddRow">
+                          <template #icon> <add-icon /></template>
+                          {{ t('timetable.form.time_section') }}
+                        </t-button>
+                        <t-button size="medium" variant="outline" @click="onMerge">
+                          <template #icon>
+                            <merge-cells-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
+                          </template>
+                          {{ t('timetable.form.merge') }}
+                        </t-button>
+                      </t-col>
+                      <t-col>
+                        <t-button size="medium" variant="outline" @click="onFill">
+                          <template #icon>
+                            <file-import-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
+                          </template>
+                          {{ t('timetable.form.fill') }}
+                        </t-button>
+                      </t-col>
+                    </t-row>
+                    <div v-for="(item, index) in RowsData" :key="index">
+                      <div style="border: 1px solid #ccc; padding: 10px; margin-top: 10px">
+                        <t-row :gutter="[32, 24]" justify="space-between">
+                          <t-col :span="2">{{ t('timetable.form.time_section') }} {{ index + 1 }}</t-col>
+                          <t-col :span="6">
+                            <div>
+                              {{ t('timetable.form.start') }} - {{ t('timetable.form.end') }}
+                              <t-time-range-picker
+                                v-model="item.range"
+                                class="demos"
+                                clearable
+                                format="HH:mm"
+                                :steps="time_steps"
+                                :tips="item.tip"
+                                allow-input
+                                @change="handleRangePick(item.index)"
+                              />
+                            </div>
+                          </t-col>
+                          <t-col :span="2">
+                            <t-button size="medium" variant="text" @click="onDefaultDel(index)">
+                              <template #icon>
+                                <delete-icon fill-color="transparent" stroke-color="currentColor" :stroke-width="2" />
+                              </template>
+                            </t-button>
+                          </t-col>
+                        </t-row>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-section">
+                  <t-card v-if="!DetailsLoading" :title="formData.DefaultTable.name">
+                    <week-table
+                      :data="formData.DefaultTable.tableData"
+                      :columns="formData.DefaultTable.tableColumns"
+                      :rowspan-and-colspan="formData.DefaultTable.rowspanAndColspan"
+                      @cell-click="cell_click_merge"
+                    />
+                  </t-card>
+                  <div v-else>
+                    <t-loading />
+                  </div>
+                </div>
+                <div class="form-submit-container">
+                  <t-button theme="primary" class="form-submit-confirm" type="submit">
+                    {{ t('form.confirm') }}
+                  </t-button>
+                </div>
+              </t-form>
+            </div>
+            <div v-else>
+              <div class="table-section">
+                <t-card v-if="!DetailsLoading" :title="formData.DefaultTable.name">
+                  <week-table
+                    :data="formData.DefaultTable.tableData"
+                    :columns="formData.DefaultTable.tableColumns"
+                    :rowspan-and-colspan="formData.DefaultTable.rowspanAndColspan"
+                  />
+                </t-card>
+                <div v-else>
+                  <t-loading />
+                </div>
+              </div>
+              <div class="form-submit-container">
+                <t-button theme="default" class="form-submit-confirm" @click="back_table_edit">
+                  {{ t('form.edit') }}
                 </t-button>
               </div>
-            </t-form>
+            </div>
           </t-tab-panel>
         </t-tabs>
       </t-space>
@@ -204,7 +321,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { AddIcon, DeleteIcon, FileImportIcon, MergeCellsIcon } from 'tdesign-icons-vue-next';
+import { AddIcon, DeleteIcon, FileImportIcon, LinkIcon, MergeCellsIcon } from 'tdesign-icons-vue-next';
 import type {
   BaseTableCellEventContext,
   InputNumberProps,
@@ -217,13 +334,14 @@ import { MessagePlugin } from 'tdesign-vue-next';
 import { onMounted, ref } from 'vue';
 
 import type { RowspanAndColspan, TableColumn, TableData, Timetable, WEEKTABLE } from '@/api/model/schoolModel';
-import { getTable } from '@/api/school';
+import { createTable, getTable } from '@/api/school';
 import Step from '@/components/steps/index.vue';
 import WeekTable from '@/components/week-table/index.vue';
 import { t } from '@/locales';
 import type { RowsDataItem, TABLE_CONFIG_Item } from '@/pages/ETT/TimeTable/constants';
 import {
   BASE_FORM_DATA,
+  CONFIG_RULES,
   Default_FORM,
   Default_Table_config,
   FORM_RULES,
@@ -239,6 +357,7 @@ const value = ref(1);
 /* -----------------------------Main Form------------------------------------ */
 const formData = ref<Timetable>(Default_FORM);
 const DetailsLoading = ref(true);
+const FormSaved = ref(false);
 /* -----------------------------Default Table-------------------------------- */
 const time_steps = ref([1, 5, 1]);
 const default_config = ref<TABLE_CONFIG_Item[]>(Default_Table_config);
@@ -246,6 +365,7 @@ const config_tip_week = ref(Default_Table_config[0].description);
 const config_tip_day = ref(Default_Table_config[1].description);
 const Cells = ref<RowspanAndColspan>({});
 const RowsData = ref<RowsDataItem[]>([]);
+const TableSaved = ref(false);
 
 /* --------------------------------Menu-------------------------------------- */
 const fetchDetailsData = async (detailId: string) => {
@@ -288,13 +408,6 @@ const removeTab = (options: { value: TabValue; index: number; e: MouseEvent }) =
 };
 
 /* -----------------------------Main Form------------------------------------ */
-// TODO
-const onSubmit = (ctx: SubmitContext) => {
-  if (ctx.validateResult === true) {
-    MessagePlugin.success(t('form.onSubmit'));
-    console.log('formData', formData.value);
-  }
-};
 const beforeUpload = (file: UploadFile) => {
   if (!/\.pdf$/.test(file.name) || !/\.xlsx$/.test(file.name)) {
     MessagePlugin.warning(t('form.beforeUpload'));
@@ -314,20 +427,49 @@ const formatResponse = (res: any) => {
   return { ...res, error: `${t('form.failUpload')}`, url: res.url };
 };
 
+const onFormSubmit = (ctx: SubmitContext) => {
+  if (ctx.validateResult === true) {
+    if (TableSaved.value) {
+      MessagePlugin.success(t('form.onSubmit'));
+      const user = JSON.parse(localStorage.getItem('user')) || { userInfo: { name: '' } };
+      formData.value.owner = user.userInfo.name;
+      if (formData.value.parentId) {
+        // 继承自Parent
+        // createDate继承: do nothing
+      } else {
+        // 原创
+        formData.value.createDate = new Date();
+      }
+      formData.value.updateDate = new Date();
+      // publishData
+      FormSaved.value = true;
+    } else {
+      MessagePlugin.warning(t('form.save_table'));
+    }
+  }
+};
+
+const back_edit = () => {
+  FormSaved.value = false;
+};
+
+const onSwitch = () => {
+  value.value = 2;
+};
+
 /* -----------------------------Default Table-------------------------------- */
 const onWeekValidate: InputNumberProps['onValidate'] = (p) => {
-  console.info('Validate', p.error);
+  console.info('Validate', p);
   if (p.error) {
-    config_tip_week.value = Default_Table_config[0].error[p.error];
+    config_tip_week.value = '';
   } else {
     config_tip_week.value = Default_Table_config[0].description;
   }
 };
 
 const onDayValidate: InputNumberProps['onValidate'] = (p) => {
-  console.info('Validate', p.error);
   if (p.error) {
-    config_tip_day.value = Default_Table_config[1].error[p.error];
+    config_tip_day.value = '';
   } else {
     config_tip_day.value = Default_Table_config[1].description;
     DetailsLoading.value = true;
@@ -535,6 +677,30 @@ const onDefaultDel = (index: number) => {
   }
   onFill();
   Cells.value = {};
+};
+
+const onTableSubmit = (ctx: SubmitContext) => {
+  if (ctx.validateResult === true) {
+    MessagePlugin.success(t('form.onSubmit'));
+    TableSaved.value = true;
+  }
+};
+
+const back_table_edit = () => {
+  TableSaved.value = false;
+  FormSaved.value = false;
+};
+
+/* ----------------------------------Save------------------------------------ */
+const onSave = async () => {
+  try {
+    const res = await createTable(formData.value);
+    console.log(res);
+  } catch (e) {
+    console.log(e);
+  } finally {
+    await MessagePlugin.success(t('form.save_success'));
+  }
 };
 </script>
 <style lang="less" scoped>

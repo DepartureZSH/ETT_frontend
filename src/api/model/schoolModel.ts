@@ -48,9 +48,6 @@ export interface TABLECONFIG {
   week?: number;
   day?: number;
   slot?: number;
-  start?: number;
-  end?: number;
-  isFixed?: boolean;
 }
 
 /** 单个课表模板数据（用于 创建 接口） */

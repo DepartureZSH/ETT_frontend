@@ -17,12 +17,13 @@
                 </t-descriptions>
                 <t-divider />
                 <t-descriptions :title="t('form.otherInfo')" layout="vertical" table-layout="auto">
-                  <t-descriptions-item :label="BASE_FORM_DATA[6].name">
-                    <span>
-                      <a :href="formData.attachment[0].url">
-                        {{ formData.attachment[0].name }}
-                      </a>
-                    </span>
+                  <t-descriptions-item v-if="formData.attachment[0]" :label="BASE_FORM_DATA[6].name">
+                    <t-link theme="primary" underline :href="formData.attachment[0].url">
+                      <template #prefix-icon>
+                        <link-icon />
+                      </template>
+                      {{ formData.attachment[0].name }}
+                    </t-link>
                   </t-descriptions-item>
                   <t-descriptions-item :label="BASE_FORM_DATA[7].name">{{ formData.description }}</t-descriptions-item>
                 </t-descriptions>
@@ -153,7 +154,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { AddIcon, DeleteIcon, MergeCellsIcon } from 'tdesign-icons-vue-next';
+import { AddIcon, DeleteIcon, LinkIcon, MergeCellsIcon } from "tdesign-icons-vue-next";
 import type {
   BaseTableCellEventContext,
   InputNumberProps,

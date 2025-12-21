@@ -51,7 +51,6 @@ export const Default_Table_Config: TABLECONFIG = {
   week: 13,
   day: 5,
   slot: 144,
-  isFixed: true,
 };
 
 type Table_Config_KEY = keyof TABLECONFIG;
@@ -90,13 +89,6 @@ export const Default_Table_config: TABLE_CONFIG_Item[] = [
     },
     display: true,
     type: 'number',
-  },
-  {
-    label: '课表类型',
-    name: 'isFixed',
-    description: '固定课表：每门课都在固定时间槽；非固定课表：每门课可在任意时间。',
-    display: true,
-    type: 'radio',
   },
 ];
 
@@ -146,7 +138,7 @@ export const Default_FORM: Timetable = {
   publishDate: '', // 发布时间
   updateDate: '', // 更新时间
   createDate: '', // 创建时间
-  attachment: [{ name: '', url: '' }] as UploadProps['value'], // 附件
+  attachment: [] as UploadProps['value'], // 附件
   description: '', // 描述
   TableConfig: Default_Table_Config, // 课程配置
   DefaultTable: Default_Table, // 默认周课表
@@ -300,4 +292,17 @@ export const FORM_RULES: Record<string, FormRule[]> = {
   name: [{ required: true, whitespace: true, trigger: 'blur' }],
   type: [{ required: true, whitespace: true, trigger: 'blur' }],
   description: [{ required: true, whitespace: true, trigger: 'blur' }],
+};
+
+export const CONFIG_RULES: Record<string, FormRule[]> = {
+  week: [
+    { required: true, trigger: 'blur' },
+    { min: 1, trigger: 'change', type: 'error', message: t('form.week_below') },
+    { max: 52, trigger: 'change', type: 'error', message: t('form.week_exceed') },
+  ],
+  day: [
+    { required: true, trigger: 'blur' },
+    { min: 1, trigger: 'change', type: 'error', message: t('form.days_below') },
+    { max: 7, trigger: 'change', type: 'error', message: t('form.days_exceed') },
+  ],
 };

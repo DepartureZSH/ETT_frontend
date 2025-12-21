@@ -16,13 +16,57 @@
         <t-tab-panel :value="1" label="课表详情" :destroy-on-hide="false">
           <div v-if="!DetailsLoading" class="detail-base">
             <t-card :bordered="false">
-              <t-descriptions :title="t('detail.title')">
-                <t-descriptions-item v-for="(item, index) in BASE_Detail_DATA" :key="index" :label="item.name">
-                  <span>
-                    {{ item.value === 'attachment' ? baseInfo[item.value][0].name : baseInfo[item.value] }}
-                  </span>
-                </t-descriptions-item>
-              </t-descriptions>
+              <div class="form-basic-container">
+                <div class="form-basic-item">
+                  <t-descriptions :title="t('detail.title')" bordered table-layout="auto">
+                    <t-descriptions-item :label="BASE_FORM_DATA[0].name">{{ baseInfo.name }}</t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[1].name">{{ baseInfo.type }}</t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[2].name">{{ baseInfo.owner }}</t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[3].name">
+                      <div v-if="baseInfo.publishDate">
+                        {{ new Date(baseInfo.publishDate).toLocaleDateString(t('Date')) }}
+                      </div>
+                      <div v-else>-</div>
+                    </t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[4].name">
+                      <div v-if="baseInfo.updateDate">
+                        {{ new Date(baseInfo.updateDate).toLocaleDateString(t('Date')) }}
+                      </div>
+                      <div v-else>-</div>
+                    </t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[5].name">
+                      <div v-if="baseInfo.createDate">
+                        {{ new Date(baseInfo.createDate).toLocaleDateString(t('Date')) }}
+                      </div>
+                      <div v-else>-</div>
+                    </t-descriptions-item>
+                  </t-descriptions>
+                  <t-divider />
+                  <t-descriptions :title="t('form.otherInfo')" layout="vertical" table-layout="auto">
+                    <t-descriptions-item
+                      v-if="baseInfo.attachment && baseInfo.attachment[0]"
+                      :label="BASE_FORM_DATA[6].name"
+                    >
+                      <t-link theme="primary" underline :href="baseInfo.attachment[0].url">
+                        <template #prefix-icon>
+                          <link-icon />
+                        </template>
+                        {{ baseInfo.attachment[0].name }}
+                      </t-link>
+                    </t-descriptions-item>
+                    <t-descriptions-item :label="BASE_FORM_DATA[7].name">{{
+                      baseInfo.description
+                    }}</t-descriptions-item>
+                  </t-descriptions>
+                </div>
+              </div>
+              <!--              <t-descriptions :title="t('detail.title')"> -->
+              <!--                <t-descriptions-item v-for="(item, index) in BASE_Detail_DATA" :key="index" :label="item.name"> -->
+              <!--                  <span> -->
+              <!--                    {{ item.value === 'attachment' ? baseInfo[item.value][0].name : baseInfo[item.value] }} -->
+              <!--                  </span> -->
+              <!--                </t-descriptions-item> -->
+              <!--              </t-descriptions> -->
             </t-card>
           </div>
           <div v-else-if="DetailsLoading">
@@ -64,13 +108,14 @@
   </div>
 </template>
 <script setup lang="ts">
+import { LinkIcon } from 'tdesign-icons-vue-next';
 import { ref, watch } from 'vue';
 
 import type { TimetableDetail } from '@/api/model/schoolModel';
 import { getDetails } from '@/api/school';
 import WeekTable from '@/components/week-table/index.vue';
 import { t } from '@/locales';
-import { BASE_Detail_DATA, Default_Detail } from '@/pages/ETT/TimeTable/constants';
+import { BASE_Detail_DATA, BASE_FORM_DATA, Default_Detail } from '@/pages/ETT/TimeTable/constants';
 
 const props = defineProps({
   detailId: {
@@ -93,6 +138,7 @@ const fetchDetailsData = async () => {
   try {
     const productId = props.detailId;
     baseInfo.value = await getDetails(productId);
+    console.log('fetchDetailsData', baseInfo.value);
     DetailsLoading.value = false;
   } catch (e) {
     console.log(e);
