@@ -49,7 +49,7 @@ export default ({ mode }: ConfigEnv): UserConfig => {
       // host: '192.168.8.238',
       proxy: {
         '/api': {
-          target: 'http://192.168.8.238:8000',
+          target: VITE_API_URL,
           changeOrigin: true,
         },
       },

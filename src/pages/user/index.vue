@@ -1,14 +1,6 @@
 <template>
   <t-row :gutter="[24, 24]">
     <t-col :flex="3">
-      <div class="user-left-greeting">
-        <div>
-          Hi，Image
-          <span class="regular"> {{ t('pages.user.markDay') }}</span>
-        </div>
-        <img src="../../assets/assets-tencent-logo.png" class="logo" />
-      </div>
-
       <t-card class="user-info-list" :title="t('pages.user.personalInfo.title')" :bordered="false">
         <template #actions>
           <t-button theme="default" shape="square" variant="text">
